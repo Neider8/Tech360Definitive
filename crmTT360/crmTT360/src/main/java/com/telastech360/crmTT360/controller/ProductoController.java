@@ -1,207 +1,207 @@
+// src/main/java/com/telastech360/crmTT360/controller/ProductoController.java
 package com.telastech360.crmTT360.controller;
 
+import com.telastech360.crmTT360.dto.ProductoDTO;
 import com.telastech360.crmTT360.entity.Producto;
+import com.telastech360.crmTT360.mapper.ProductoMapper;
 import com.telastech360.crmTT360.service.ProductoService;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize; // Asegurar importación
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
-// Importa la anotación PreAuthorize (ya estaba)
-import org.springframework.security.access.prepost.PreAuthorize;
-
-// Importaciones de Swagger/OpenAPI
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody; // Importa RequestBody de swagger
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Controlador REST para gestionar las operaciones CRUD y consultas específicas de Productos Terminados.
+ */
 @RestController
 @RequestMapping("/api/productos")
-@Tag(name = "Productos", description = "Gestión de Productos Terminados en el sistema") // Anotación Tag
+@Tag(name = "Productos Terminados", description = "Gestión de Productos Terminados (Prendas)")
 public class ProductoController {
 
+    private static final Logger log = LoggerFactory.getLogger(ProductoController.class);
+
     private final ProductoService productoService;
+    private final ProductoMapper productoMapper;
 
     @Autowired
-    public ProductoController(ProductoService productoService) {
+    public ProductoController(ProductoService productoService, ProductoMapper productoMapper) {
         this.productoService = productoService;
+        this.productoMapper = productoMapper;
     }
 
-    // ========== ENDPOINTS CRUD ========== //
-
-    /**
-     * Listar todos los productos.
-     *
-     * @return Lista de productos.
-     */
     @GetMapping
-    // Ejemplo: Permitir a todos los roles operativos listar productos
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Lista todos los productos", description = "Obtiene una lista de todos los productos terminados registrados.")
+    @PreAuthorize("hasAuthority('LEER_PRODUCTOS')") // Modificado
+    @Operation(summary = "Lista todos los productos terminados", description = "Obtiene una lista completa de todos los productos terminados disponibles.")
     @ApiResponse(responseCode = "200", description = "Lista de productos obtenida exitosamente",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Producto.class))) // Describe la respuesta (Lista de entidad)
-    @ApiResponse(responseCode = "401", description = "No autenticado") // Describe posibles errores
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<List<Producto>> listarTodosLosProductos() {
+                    array = @ArraySchema(schema = @Schema(implementation = ProductoDTO.class))))
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<List<ProductoDTO>> listarTodosLosProductos() {
+        log.info("GET /api/productos - Solicitud para listar todos los productos");
         List<Producto> productos = productoService.listarTodosLosProductos();
-        return new ResponseEntity<>(productos, HttpStatus.OK);
+        List<ProductoDTO> dtos = productos.stream()
+                .map(productoMapper::toDTO)
+                .collect(Collectors.toList());
+        log.info("GET /api/productos - Devolviendo {} productos", dtos.size());
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    // Ejemplo: Permitir a todos los roles operativos obtener un producto por ID
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Obtiene un producto por ID", description = "Recupera los detalles de un producto específico usando su ID.")
-    @Parameter(name = "id", description = "ID del producto a obtener", required = true, example = "1") // Describe parámetro
-    @ApiResponse(responseCode = "200", description = "Producto encontrado exitosamente",
+    @PreAuthorize("hasAuthority('LEER_PRODUCTOS')") // Modificado
+    @Operation(summary = "Obtiene un producto por ID", description = "Recupera los detalles de un producto terminado específico usando su ID de ítem.")
+    @Parameter(name = "id", description = "ID único del producto (ID del ítem)", required = true, example = "1", schema = @Schema(type = "integer", format = "int64"))
+    @ApiResponse(responseCode = "200", description = "Producto encontrado",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Producto.class))) // Describe la respuesta (Entidad individual)
-    @ApiResponse(responseCode = "404", description = "Producto no encontrado") // Asumo que el servicio lanza 404
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<Producto> obtenerProductoPorId(@PathVariable Long id) {
+                    schema = @Schema(implementation = ProductoDTO.class)))
+    @ApiResponse(responseCode = "404", description = "Producto no encontrado", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<ProductoDTO> obtenerProductoPorId(@PathVariable Long id) {
+        log.info("GET /api/productos/{} - Solicitud para obtener producto por ID", id);
         Producto producto = productoService.obtenerProductoPorId(id);
-        return new ResponseEntity<>(producto, HttpStatus.OK);
+        ProductoDTO dto = productoMapper.toDTO(producto);
+        log.info("GET /api/productos/{} - Producto encontrado: {}", id, dto.getNombre());
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    /**
-     * Crear un nuevo producto.
-     *
-     * @param producto Datos del producto a crear.
-     * @return Producto creado.
-     */
     @PostMapping
-    // Ejemplo: Permitir a ADMIN, GERENTE y OPERARIO crear productos
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'OPERARIO')")
-    @Operation(summary = "Crea un nuevo producto", description = "Registra un nuevo producto terminado en el sistema.")
-    @RequestBody(description = "Datos del producto a crear", required = true,
+    @PreAuthorize("hasAuthority('CREAR_PRODUCTO')") // Modificado (o GESTIONAR_PRODUCTOS)
+    @Operation(summary = "Crea un nuevo producto terminado", description = "Registra una nueva prenda (producto terminado) en el inventario.")
+    @RequestBody(description = "Datos del producto a crear. Incluye campos comunes de ítem y específicos como tipo de prenda, talla, color.", required = true,
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Producto.class))) // Describe cuerpo solicitud (usando la entidad)
+                    schema = @Schema(implementation = ProductoDTO.class)))
     @ApiResponse(responseCode = "201", description = "Producto creado exitosamente",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Producto.class))) // Describe respuesta
-    @ApiResponse(responseCode = "400", description = "Datos de solicitud inválidos")
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<Producto> crearProducto(@RequestBody Producto producto) {
-        Producto nuevoProducto = productoService.crearProducto(producto);
-        return new ResponseEntity<>(nuevoProducto, HttpStatus.CREATED);
+                    schema = @Schema(implementation = ProductoDTO.class)))
+    @ApiResponse(responseCode = "400", description = "Datos inválidos (DTO, tipo/talla inválido)", content = @Content)
+    @ApiResponse(responseCode = "409", description = "Conflicto - Código de ítem ya existe", content = @Content)
+    @ApiResponse(responseCode = "404", description = "No encontrado - Alguna relación (Bodega, Cat, etc.) no existe", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<ProductoDTO> crearProducto(@Valid @RequestBody ProductoDTO productoDto) {
+        log.info("POST /api/productos - Solicitud para crear producto: {}", productoDto.getCodigo());
+        Producto nuevoProducto = productoService.crearProducto(productoDto);
+        ProductoDTO responseDto = productoMapper.toDTO(nuevoProducto);
+        log.info("POST /api/productos - Producto '{}' creado con ID: {}", responseDto.getNombre(), responseDto.getItemId());
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    // Ejemplo: Permitir a ADMIN, GERENTE y OPERARIO actualizar productos
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'OPERARIO')")
-    @Operation(summary = "Actualiza un producto existente", description = "Modifica los detalles de un producto usando su ID.")
-    @Parameter(name = "id", description = "ID del producto a actualizar", required = true, example = "1")
+    @PreAuthorize("hasAuthority('EDITAR_PRODUCTO')") // Modificado (o GESTIONAR_PRODUCTOS)
+    @Operation(summary = "Actualiza un producto terminado existente", description = "Modifica los detalles de un producto terminado.")
+    @Parameter(name = "id", description = "ID del producto (ítem) a actualizar", required = true, example = "1", schema = @Schema(type = "integer", format = "int64"))
     @RequestBody(description = "Datos actualizados del producto", required = true,
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Producto.class))) // Describe cuerpo solicitud (usando la entidad)
+                    schema = @Schema(implementation = ProductoDTO.class)))
     @ApiResponse(responseCode = "200", description = "Producto actualizado exitosamente",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Producto.class))) // Describe respuesta
-    @ApiResponse(responseCode = "400", description = "Datos de solicitud inválidos")
-    @ApiResponse(responseCode = "404", description = "Producto no encontrado")
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<Producto> actualizarProducto(@PathVariable Long id, @RequestBody Producto productoActualizado) {
-        Producto producto = productoService.actualizarProducto(id, productoActualizado);
-        return new ResponseEntity<>(producto, HttpStatus.OK);
+                    schema = @Schema(implementation = ProductoDTO.class)))
+    @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content)
+    @ApiResponse(responseCode = "404", description = "No encontrado - Producto o relación no existe", content = @Content)
+    @ApiResponse(responseCode = "409", description = "Conflicto - Código de ítem ya existe", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<ProductoDTO> actualizarProducto(
+            @PathVariable Long id,
+            @Valid @RequestBody ProductoDTO productoDto
+    ) {
+        log.info("PUT /api/productos/{} - Solicitud para actualizar producto", id);
+        Producto productoGuardado = productoService.actualizarProducto(id, productoDto);
+        ProductoDTO responseDto = productoMapper.toDTO(productoGuardado);
+        log.info("PUT /api/productos/{} - Producto actualizado", id);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    // Ejemplo: Solo ADMIN puede eliminar productos
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Elimina un producto", description = "Elimina un producto del sistema usando su ID.")
-    @Parameter(name = "id", description = "ID del producto a eliminar", required = true, example = "1")
-    @ApiResponse(responseCode = "204", description = "Producto eliminado exitosamente")
-    @ApiResponse(responseCode = "404", description = "Producto no encontrado")
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado (Solo ADMIN)")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    @PreAuthorize("hasAuthority('ELIMINAR_PRODUCTO')") // Modificado
+    @Operation(summary = "Elimina un producto terminado", description = "Elimina un producto terminado del sistema. Falla si está en pedidos activos.")
+    @Parameter(name = "id", description = "ID del producto (ítem) a eliminar", required = true, example = "1", schema = @Schema(type="integer", format="int64"))
+    @ApiResponse(responseCode = "204", description = "Producto eliminado exitosamente", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Producto no encontrado", content = @Content)
+    @ApiResponse(responseCode = "409", description = "Conflicto - El producto está en uso en pedidos activos", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
     public ResponseEntity<Void> eliminarProducto(@PathVariable Long id) {
+        log.info("DELETE /api/productos/{} - Solicitud para eliminar producto", id);
         productoService.eliminarProducto(id);
+        log.info("DELETE /api/productos/{} - Producto eliminado", id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // ========== ENDPOINTS ADICIONALES (Opcionales) ========== //
+    // --- Endpoints Adicionales (usar 'BUSCAR_PRODUCTOS' o 'LEER_PRODUCTOS') ---
 
-    /**
-     * Buscar productos por tipo de prenda.
-     *
-     * @param tipoPrenda Tipo de prenda.
-     * @return Lista de productos filtrados.
-     */
     @GetMapping("/tipo-prenda/{tipoPrenda}")
-    // Ejemplo: Permitir a todos los roles operativos buscar por tipo de prenda
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Busca productos por tipo de prenda", description = "Obtiene una lista de productos filtrados por su tipo de prenda.")
-    @Parameter(name = "tipoPrenda", description = "Tipo de prenda (enum)", required = true, example = "CAMISA",
-            schema = @Schema(implementation = Producto.TipoPrenda.class)) // Documenta el enum
+    @PreAuthorize("hasAuthority('BUSCAR_PRODUCTOS')") // Modificado (o LEER_PRODUCTOS)
+    @Operation(summary = "Busca productos por tipo de prenda", description = "Obtiene una lista de productos terminados filtrados por su tipo de prenda.")
+    @Parameter(name = "tipoPrenda", description = "Tipo de prenda (CAMISA, PANTALON, VESTIDO, CHAQUETA, OTROS)", required = true, example = "CAMISA", schema = @Schema(implementation = Producto.TipoPrenda.class))
     @ApiResponse(responseCode = "200", description = "Productos encontrados",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Producto.class))) // Describe la respuesta
-    @ApiResponse(responseCode = "400", description = "Tipo de prenda inválido")
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<List<Producto>> buscarPorTipoPrenda(@PathVariable Producto.TipoPrenda tipoPrenda) {
+                    array = @ArraySchema(schema = @Schema(implementation = ProductoDTO.class))))
+    @ApiResponse(responseCode = "400", description = "Tipo de prenda inválido", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<List<ProductoDTO>> buscarPorTipoPrenda(@PathVariable Producto.TipoPrenda tipoPrenda) {
+        log.info("GET /api/productos/tipo-prenda/{} - Buscando por tipo de prenda", tipoPrenda);
         List<Producto> productos = productoService.buscarPorTipoPrenda(tipoPrenda);
-        return new ResponseEntity<>(productos, HttpStatus.OK);
+        List<ProductoDTO> dtos = productos.stream()
+                .map(productoMapper::toDTO)
+                .collect(Collectors.toList());
+        log.info("GET /api/productos/tipo-prenda/{} - Encontrados {} productos", tipoPrenda, dtos.size());
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
-    /**
-     * Buscar productos por talla.
-     *
-     * @param talla Talla del producto.
-     * @return Lista de productos filtrados.
-     */
     @GetMapping("/talla/{talla}")
-    // Ejemplo: Permitir a todos los roles operativos buscar por talla
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Busca productos por talla", description = "Obtiene una lista de productos filtrados por su talla.")
-    @Parameter(name = "talla", description = "Talla del producto (enum)", required = true, example = "M",
-            schema = @Schema(implementation = Producto.Talla.class)) // Documenta el enum
+    @PreAuthorize("hasAuthority('BUSCAR_PRODUCTOS')") // Modificado (o LEER_PRODUCTOS)
+    @Operation(summary = "Busca productos por talla", description = "Obtiene una lista de productos terminados filtrados por su talla.")
+    @Parameter(name = "talla", description = "Talla del producto (XS, S, M, L, XL, XXL, UNICA)", required = true, example = "M", schema = @Schema(implementation = Producto.Talla.class))
     @ApiResponse(responseCode = "200", description = "Productos encontrados",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Producto.class))) // Describe la respuesta
-    @ApiResponse(responseCode = "400", description = "Talla inválida")
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<List<Producto>> buscarPorTalla(@PathVariable Producto.Talla talla) {
+                    array = @ArraySchema(schema = @Schema(implementation = ProductoDTO.class))))
+    @ApiResponse(responseCode = "400", description = "Talla inválida", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<List<ProductoDTO>> buscarPorTalla(@PathVariable Producto.Talla talla) {
+        log.info("GET /api/productos/talla/{} - Buscando por talla", talla);
         List<Producto> productos = productoService.buscarPorTalla(talla);
-        return new ResponseEntity<>(productos, HttpStatus.OK);
+        List<ProductoDTO> dtos = productos.stream()
+                .map(productoMapper::toDTO)
+                .collect(Collectors.toList());
+        log.info("GET /api/productos/talla/{} - Encontrados {} productos", talla, dtos.size());
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
-    /**
-     * Buscar productos por color.
-     *
-     * @param color Color del producto.
-     * @return Lista de productos filtrados.
-     */
     @GetMapping("/color/{color}")
-    // Ejemplo: Permitir a todos los roles operativos buscar por color
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Busca productos por color", description = "Obtiene una lista de productos filtrados por su color.")
-    @Parameter(name = "color", description = "Color del producto", required = true, example = "Rojo")
+    @PreAuthorize("hasAuthority('BUSCAR_PRODUCTOS')") // Modificado (o LEER_PRODUCTOS)
+    @Operation(summary = "Busca productos por color", description = "Obtiene una lista de productos terminados cuyo color contiene el texto de búsqueda (case-insensitive).")
+    @Parameter(name = "color", description = "Texto a buscar en el color del producto", required = true, example = "Rojo")
     @ApiResponse(responseCode = "200", description = "Productos encontrados",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Producto.class))) // Describe la respuesta
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<List<Producto>> buscarPorColor(@PathVariable String color) {
+                    array = @ArraySchema(schema = @Schema(implementation = ProductoDTO.class))))
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<List<ProductoDTO>> buscarPorColor(@PathVariable String color) {
+        log.info("GET /api/productos/color/{} - Buscando por color", color);
         List<Producto> productos = productoService.buscarPorColor(color);
-        return new ResponseEntity<>(productos, HttpStatus.OK);
+        List<ProductoDTO> dtos = productos.stream()
+                .map(productoMapper::toDTO)
+                .collect(Collectors.toList());
+        log.info("GET /api/productos/color/{} - Encontrados {} productos", color, dtos.size());
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 }

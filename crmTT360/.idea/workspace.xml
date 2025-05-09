@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="41109dcf-bd8c-4ab1-802f-93f2ea2a1b14" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../.idea/Tech360UltraProMax.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/crmTT360.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontendtech360" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontendtech360" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bd/backup_telasTech360.sql..sql" beforeDir="false" afterPath="$PROJECT_DIR$/../bd/backup_telasTech360.sql..sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/mvnw.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/mvnw.cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/advice/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/advice/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/BodegaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/BodegaController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/CategoriaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/CategoriaController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/ClienteInternoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/ClienteInternoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/EstadoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/EstadoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/FacturaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/FacturaController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/ItemController.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/ItemController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/MateriaPrimaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/MateriaPrimaController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/PedidoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/PedidoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/PedidoDetalleController.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/PedidoDetalleController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/PermisoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/PermisoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/ProductoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/ProductoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/ProveedorController.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/ProveedorController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/RolController.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/RolController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/RolPermisoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/RolPermisoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/UsuarioController.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/controller/UsuarioController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/BodegaDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/BodegaDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/CategoriaDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/CategoriaDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/ClienteInternoDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/ClienteInternoDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/EstadoDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/EstadoDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/FacturaDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/FacturaDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/ItemDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/ItemDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/MateriaPrimaDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/MateriaPrimaDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/PedidoDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/PedidoDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/PedidoDetalleDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/PedidoDetalleDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/PermisoDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/PermisoDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/ProductoDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/ProductoDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/ProveedorDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/ProveedorDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/RolDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/RolDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/RolPermisoDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/RolPermisoDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/UsuarioRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/UsuarioRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/UsuarioResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/dto/UsuarioResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Bodega.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Bodega.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Categoria.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Categoria.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/ClienteInterno.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/ClienteInterno.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Estado.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Estado.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Factura.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Factura.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Item.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Item.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/MateriaPrima.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/MateriaPrima.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Pedido.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Pedido.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/PedidoDetalle.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/PedidoDetalle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Permiso.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Permiso.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Producto.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Producto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Proveedor.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Proveedor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Rol.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Rol.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/RolPermiso.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/RolPermiso.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/RolPermisoId.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/RolPermisoId.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Usuario.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/entity/Usuario.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/exception/DuplicateResourceException.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/exception/DuplicateResourceException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/exception/IllegalOperationException.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/exception/IllegalOperationException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/exception/InvalidDataException.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/exception/InvalidDataException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/exception/ResourceNotFoundException.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/exception/ResourceNotFoundException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/exception/UsedStateException.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/exception/UsedStateException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/BodegaMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/BodegaMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/CategoriaMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/CategoriaMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/ClienteInternoMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/ClienteInternoMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/EstadoMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/EstadoMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/FacturaMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/FacturaMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/ItemMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/ItemMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/MateriaPrimaMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/MateriaPrimaMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/PedidoDetalleMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/PedidoDetalleMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/PedidoMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/PedidoMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/PermisoMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/PermisoMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/ProductoMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/ProductoMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/ProveedorMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/ProveedorMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/RolMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/RolMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/RolPermisoMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/RolPermisoMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/UsuarioMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/mapper/UsuarioMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/BodegaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/BodegaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/CategoriaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/CategoriaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/ClienteInternoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/ClienteInternoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/EstadoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/EstadoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/FacturaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/FacturaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/ItemRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/ItemRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/MateriaPrimaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/MateriaPrimaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/PedidoDetalleRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/PedidoDetalleRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/PedidoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/PedidoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/PermisoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/PermisoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/ProductoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/ProductoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/ProveedorRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/ProveedorRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/RolPermisoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/RolPermisoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/RolRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/RolRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/UsuarioRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/repository/UsuarioRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/security/auth/AuthEntryPointJwt.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/security/auth/AuthEntryPointJwt.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/security/auth/dto/JwtResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/security/auth/dto/JwtResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/security/auth/dto/LoginRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/security/auth/dto/LoginRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/security/config/OpenApiConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/security/config/OpenApiConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/security/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/security/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/security/jwt/JwtCore.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/security/jwt/JwtCore.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/security/jwt/JwtRequestFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/security/jwt/JwtRequestFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/security/services/UserDetailsServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/security/services/UserDetailsServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/BodegaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/BodegaService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/CategoriaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/CategoriaService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/ClienteInternoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/ClienteInternoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/EstadoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/EstadoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/FacturaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/FacturaService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/ItemService.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/ItemService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/MateriaPrimaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/MateriaPrimaService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/PedidoDetalleService.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/PedidoDetalleService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/PedidoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/PedidoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/PermisoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/PermisoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/ProductoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/ProductoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/ProveedorService.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/ProveedorService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/RolPermisoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/RolPermisoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/RolService.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/RolService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/UsuarioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/java/com/telastech360/crmTT360/service/UsuarioService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crmTT360/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/crmTT360/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 7
+}]]></component>
+  <component name="ProjectId" id="2wpm3mzAuH6gLxbqgin1lXjZdZd" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "JUnit.CrmTt360ApplicationTests.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/user/OneDrive/Desktop/Tech360UltraProMax/crmTT360"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="CrmTt360ApplicationTests" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="crmTT360" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.telastech360.crmTT360.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.telastech360.crmTT360" />
+      <option name="MAIN_CLASS_NAME" value="com.telastech360.crmTT360.CrmTt360ApplicationTests" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.CrmTt360ApplicationTests" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="jdk-21.0.2-openjdk-21.0.2-4caba194b151-4f524021" />
+        <option value="jdk-22-openjdk-22-3183f394aec4-bad0321e" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="41109dcf-bd8c-4ab1-802f-93f2ea2a1b14" name="Changes" comment="" />
+      <created>1746746692748</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1746746692748</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+</project>

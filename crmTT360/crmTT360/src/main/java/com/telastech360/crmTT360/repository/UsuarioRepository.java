@@ -15,17 +15,19 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByEmail(String email);
     Optional<Usuario> findByEmailIgnoreCase(String email);
 
-    // Añadido @Param
+    // --- Corrección aplicada (ya presente en tu código) ---
     @Query("SELECT u FROM Usuario u JOIN u.rol r WHERE r.nombre = :rolNombre")
     List<Usuario> findByRolNombre(@Param("rolNombre") String rolNombre);
+    // -------------------------------------------------------
 
     List<Usuario> findByRol_Nombre(String rolNombre);
 
     List<Usuario> findByEstado(String estado);
 
-    // Añadido @Param
+    // --- Corrección aplicada (ya presente en tu código) ---
     @Query("SELECT u FROM Usuario u WHERE u.nombre LIKE %:termino% OR u.email LIKE %:termino%")
     List<Usuario> buscarPorNombreOEmail(@Param("termino") String termino);
+    // -------------------------------------------------------
 
     List<Usuario> findByNombreContainingOrEmailContaining(String nombre, String email);
 
@@ -37,12 +39,14 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     List<Usuario> findAllOrderedByName();
     List<Usuario> findAllByOrderByNombreAsc();
 
-    // <--- ASEGURADO: Sin comentario dentro del String de la @Query y añadido @Param
+    // --- Corrección aplicada (ya presente en tu código) ---
     @Query("SELECT u FROM Usuario u WHERE u.email = :email")
     Optional<Usuario> findByEmailForAuthentication(@Param("email") String email);
+    // -------------------------------------------------------
 
-    // Añadido @Param
+    // --- Corrección aplicada (ya presente en tu código) ---
     @Query("SELECT COUNT(u) FROM Usuario u WHERE u.rol.nombre = :rolNombre")
     long countByRolNombre(@Param("rolNombre") String rolNombre);
+    // -------------------------------------------------------
     long countByRol_Nombre(String rolNombre);
 }

@@ -3,6 +3,7 @@ package com.telastech360.crmTT360.repository;
 import com.telastech360.crmTT360.entity.Estado;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param; // Importar @Param
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,8 +13,10 @@ import java.util.Optional;
 public interface EstadoRepository extends JpaRepository<Estado, Long> {
 
     // Búsqueda por tipo y valor exacto (case-sensitive)
+    // --- Corrección: Añadido @Param ---
     @Query("SELECT e FROM Estado e WHERE e.tipoEstado = :tipo AND e.valor = :valor")
-    Optional<Estado> findByTipoAndValor(Estado.TipoEstado tipo, String valor);
+    Optional<Estado> findByTipoAndValor(@Param("tipo") Estado.TipoEstado tipo, @Param("valor") String valor);
+    // ------------------------------------
 
     // Búsqueda por tipo de estado
     List<Estado> findByTipoEstado(Estado.TipoEstado tipo);

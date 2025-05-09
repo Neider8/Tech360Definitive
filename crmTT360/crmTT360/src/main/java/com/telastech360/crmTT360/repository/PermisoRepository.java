@@ -21,16 +21,14 @@ public interface PermisoRepository extends JpaRepository<Permiso, Long> {
     List<Permiso> findByNombreContaining(String fragmento);
     // Búsqueda por fragmento de descripción (JPQL personalizado)
     @Query("SELECT p FROM Permiso p WHERE p.descripcion LIKE %:texto%")
-    List<Permiso> buscarPorDescripcion(String texto);
+    List<Permiso> buscarPorDescripcion(@Param("texto") String texto); // @Param añadido
     // Verificación de existencia por nombre
     boolean existsByNombre(String nombre);
 
     // Obtener permisos asociados a un rol específico
-    // ===>>> CORRECCIÓN AQUÍ: Usar el alias 'rol' para la entidad Rol y su ID 'rolId' <<<===
-    // Asumo que la entidad Permiso tiene una colección ManyToMany llamada 'roles'
-    // y que el ID de la entidad Rol se llama 'rolId'.
-    @Query("SELECT p FROM Permiso p JOIN p.roles rol WHERE rol.rolId = :rolId") // Corregido: rol.rolId en lugar de rp.rol.id
-    List<Permiso> findPermisosByRolId(@Param("rolId") Long rolId); // Asegúrate de usar @Param aquí
+    // ===>>> CORRECCIÓN APLICADA (ya presente en tu código): Usar alias y @Param <<<===
+    @Query("SELECT p FROM Permiso p JOIN p.roles rol WHERE rol.rolId = :rolId")
+    List<Permiso> findPermisosByRolId(@Param("rolId") Long rolId);
     // ===================================================================================
 
     // Obtener todos los permisos ordenados

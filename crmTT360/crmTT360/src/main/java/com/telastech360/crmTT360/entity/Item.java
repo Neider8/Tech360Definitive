@@ -15,7 +15,6 @@ import java.util.Objects;
 @DiscriminatorColumn(name = "tipo_item", discriminatorType = DiscriminatorType.STRING)
 public class Item {
 
-    // Enum interno para tipos de ítems
     public enum TipoItem {
         MATERIA_PRIMA, PRODUCTO_TERMINADO
     }
@@ -50,8 +49,10 @@ public class Item {
 
     @NotNull(message = "El stock disponible es obligatorio")
     @Min(value = 0, message = "El stock disponible no puede ser negativo")
+    // ----- CORRECCIÓN: Este es el campo correcto según tu schema V1 -----
     @Column(name = "stock_disponible", nullable = false)
     private Integer stockDisponible;
+    // --------------------------------------------------------------------
 
     @NotNull(message = "El stock mínimo es obligatorio")
     @Min(value = 0, message = "El stock mínimo no puede ser negativo")
@@ -97,10 +98,8 @@ public class Item {
     @NotNull(message = "El tipo de item es obligatorio")
     private TipoItem tipoItem;
 
-    // Constructor vacío (requerido por JPA)
     public Item() {}
 
-    // Constructor con campos obligatorios
     public Item(String codigo, String nombre, String unidadMedida, BigDecimal precio,
                 Integer stockDisponible, Integer stockMinimo, Estado estado,
                 Proveedor proveedor, Categoria categoria, Bodega bodega, Usuario usuario) {
@@ -118,149 +117,53 @@ public class Item {
         this.fechaIngreso = new Timestamp(System.currentTimeMillis());
     }
 
-    // Getters y Setters
-    public Long getItemId() {
-        return itemId;
-    }
+    // --- Getters y Setters (sin cambios relevantes, solo asegurar que no haya refs a stock_actual) ---
+    public Long getItemId() { return itemId; }
+    public void setItemId(Long itemId) { this.itemId = itemId; }
+    public String getCodigo() { return codigo; }
+    public void setCodigo(String codigo) { this.codigo = codigo; }
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public String getUnidadMedida() { return unidadMedida; }
+    public void setUnidadMedida(String unidadMedida) { this.unidadMedida = unidadMedida; }
+    public BigDecimal getPrecio() { return precio; }
+    public void setPrecio(BigDecimal precio) { this.precio = precio; }
+    public Integer getStockDisponible() { return stockDisponible; }
+    public void setStockDisponible(Integer stockDisponible) { this.stockDisponible = stockDisponible; }
+    public Integer getStockMinimo() { return stockMinimo; }
+    public void setStockMinimo(Integer stockMinimo) { this.stockMinimo = stockMinimo; }
+    public Integer getStockMaximo() { return stockMaximo; }
+    public void setStockMaximo(Integer stockMaximo) { this.stockMaximo = stockMaximo; }
+    public Timestamp getFechaIngreso() { return fechaIngreso; }
+    public void setFechaIngreso(Timestamp fechaIngreso) { this.fechaIngreso = fechaIngreso; }
+    public Date getFechaVencimiento() { return fechaVencimiento; }
+    public void setFechaVencimiento(Date fechaVencimiento) { this.fechaVencimiento = fechaVencimiento; }
+    public Estado getEstado() { return estado; }
+    public void setEstado(Estado estado) { this.estado = estado; }
+    public Proveedor getProveedor() { return proveedor; }
+    public void setProveedor(Proveedor proveedor) { this.proveedor = proveedor; }
+    public Categoria getCategoria() { return categoria; }
+    public void setCategoria(Categoria categoria) { this.categoria = categoria; }
+    public Bodega getBodega() { return bodega; }
+    public void setBodega(Bodega bodega) { this.bodega = bodega; }
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+    public TipoItem getTipoItem() { return tipoItem; }
+    public void setTipoItem(TipoItem tipoItem) { this.tipoItem = tipoItem; }
 
-    public void setItemId(Long itemId) {
-        this.itemId = itemId;
-    }
-
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public String getUnidadMedida() {
-        return unidadMedida;
-    }
-
-    public void setUnidadMedida(String unidadMedida) {
-        this.unidadMedida = unidadMedida;
-    }
-
-    public BigDecimal getPrecio() {
-        return precio;
-    }
-
-    public void setPrecio(BigDecimal precio) {
-        this.precio = precio;
-    }
-
-    public Integer getStockDisponible() {
-        return stockDisponible;
-    }
-
-    public void setStockDisponible(Integer stockDisponible) {
-        this.stockDisponible = stockDisponible;
-    }
-
-    public Integer getStockMinimo() {
-        return stockMinimo;
-    }
-
-    public void setStockMinimo(Integer stockMinimo) {
-        this.stockMinimo = stockMinimo;
-    }
-
-    public Integer getStockMaximo() {
-        return stockMaximo;
-    }
-
-    public void setStockMaximo(Integer stockMaximo) {
-        this.stockMaximo = stockMaximo;
-    }
-
-    public Timestamp getFechaIngreso() {
-        return fechaIngreso;
-    }
-
-    public void setFechaIngreso(Timestamp fechaIngreso) {
-        this.fechaIngreso = fechaIngreso;
-    }
-
-    public Date getFechaVencimiento() {
-        return fechaVencimiento;
-    }
-
-    public void setFechaVencimiento(Date fechaVencimiento) {
-        this.fechaVencimiento = fechaVencimiento;
-    }
-
-    public Estado getEstado() {
-        return estado;
-    }
-
-    public void setEstado(Estado estado) {
-        this.estado = estado;
-    }
-
-    public Proveedor getProveedor() {
-        return proveedor;
-    }
-
-    public void setProveedor(Proveedor proveedor) {
-        this.proveedor = proveedor;
-    }
-
-    public Categoria getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
-    }
-
-    public Bodega getBodega() {
-        return bodega;
-    }
-
-    public void setBodega(Bodega bodega) {
-        this.bodega = bodega;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    public TipoItem getTipoItem() {
-        return tipoItem;
-    }
-
-    public void setTipoItem(TipoItem tipoItem) {
-        this.tipoItem = tipoItem;
-    }
-
-    // Métodos adicionales (si son necesarios)
+    /**
+     * Ajusta el stock disponible.
+     * @param cantidad La cantidad a sumar (positivo) o restar (negativo).
+     * @throws IllegalArgumentException Si el ajuste resultaría en stock negativo.
+     */
     public void ajustarStock(int cantidad) {
-        if (cantidad < 0 && Math.abs(cantidad) > this.stockDisponible) {
-            throw new IllegalArgumentException("No se puede reducir más del stock disponible");
+        int nuevoStock = this.stockDisponible + cantidad;
+        if (nuevoStock < 0) {
+            throw new IllegalArgumentException("No se puede reducir más del stock disponible. Stock actual: " + this.stockDisponible + ", ajuste: " + cantidad);
         }
-        this.stockDisponible += cantidad;
+        this.stockDisponible = nuevoStock;
     }
 
     @Override

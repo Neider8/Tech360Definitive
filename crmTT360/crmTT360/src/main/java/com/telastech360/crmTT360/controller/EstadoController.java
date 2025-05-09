@@ -1,18 +1,22 @@
+// src/main/java/com/telastech360/crmTT360/controller/EstadoController.java
 package com.telastech360.crmTT360.controller;
 
+import com.telastech360.crmTT360.dto.EstadoDTO;
 import com.telastech360.crmTT360.entity.Estado;
 import com.telastech360.crmTT360.entity.Estado.TipoEstado;
+import com.telastech360.crmTT360.mapper.EstadoMapper;
 import com.telastech360.crmTT360.service.EstadoService;
+import jakarta.validation.Valid; // Importar @Valid
+import org.slf4j.Logger; // Importar Logger
+import org.slf4j.LoggerFactory; // Importar LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
-import java.util.List;
-import com.telastech360.crmTT360.dto.EstadoDTO;
-
-// Importa la anotación PreAuthorize (ya estaba)
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 // Importaciones de Swagger/OpenAPI
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,211 +25,202 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody; // Importa RequestBody de swagger
-
+// Ojo: @RequestBody de Swagger es io.swagger.v3.oas.annotations.parameters.RequestBody
+//      @RequestBody de Spring es org.springframework.web.bind.annotation.RequestBody
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 
 /**
  * Controlador REST para gestionar las operaciones CRUD y consultas de la entidad Estado.
  */
 @RestController
-@RequestMapping("/api/estados") // Define la ruta base para este controlador
-@Tag(name = "Estados", description = "Gestión de Estados para diferentes entidades") // Anotación Tag
+@RequestMapping("/api/estados")
+@Tag(name = "Estados", description = "Gestión de Estados para diferentes entidades (Pedidos, Items, Bodegas, etc.)")
 public class EstadoController {
 
-    private final EstadoService estadoService;
+    // Logger para la clase
+    private static final Logger log = LoggerFactory.getLogger(EstadoController.class);
 
-    /**
-     * Constructor para inyectar la dependencia de EstadoService.
-     * @param estadoService El servicio para la lógica de negocio de Estado.
-     */
+    private final EstadoService estadoService;
+    private final EstadoMapper estadoMapper;
+
     @Autowired
-    public EstadoController(EstadoService estadoService) {
+    public EstadoController(EstadoService estadoService, EstadoMapper estadoMapper) {
         this.estadoService = estadoService;
+        this.estadoMapper = estadoMapper;
     }
 
-    // ========== ENDPOINTS CRUD ========== //
-
-    /**
-     * Endpoint para listar todos los estados disponibles.
-     * Responde a GET /api/estados
-     * @return ResponseEntity con la lista de estados y estado OK.
-     */
     @GetMapping
-    // Ejemplo: Permitir a todos los roles operativos listar estados
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Lista todos los estados", description = "Obtiene una lista de todos los estados disponibles en el sistema.") // Anotación Operation
+    @PreAuthorize("hasAuthority('LEER_ESTADOS')")
+    @Operation(summary = "Lista todos los estados", description = "Obtiene una lista de todos los estados disponibles en el sistema, sin filtrar por tipo.")
     @ApiResponse(responseCode = "200", description = "Lista de estados obtenida exitosamente",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = EstadoDTO.class))) // Describe la respuesta
-    @ApiResponse(responseCode = "401", description = "No autenticado") // Describe posibles errores
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                    array = @ArraySchema(schema = @Schema(implementation = EstadoDTO.class))))
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
     public ResponseEntity<List<EstadoDTO>> listarTodosLosEstados() {
+        log.info("GET /api/estados - Solicitud para listar todos los estados");
         List<EstadoDTO> estados = estadoService.listarTodosLosEstados();
+        log.info("GET /api/estados - Devolviendo {} estados", estados.size());
         return new ResponseEntity<>(estados, HttpStatus.OK);
     }
 
-    /**
-     * Endpoint para obtener un estado por su ID.
-     * Responde a GET /api/estados/{id}
-     * @param id El ID del estado a obtener.
-     * @return ResponseEntity con el estado encontrado y estado OK, o NOT_FOUND si no existe.
-     */
     @GetMapping("/{id}")
-    // Ejemplo: Permitir a todos los roles operativos obtener un estado por ID
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Obtiene un estado por ID", description = "Recupera los detalles de un estado específico usando su ID.")
-    @Parameter(name = "id", description = "ID del estado a obtener", required = true, example = "1") // Describe parámetro
-    @ApiResponse(responseCode = "200", description = "Estado encontrado exitosamente",
+    @PreAuthorize("hasAuthority('LEER_ESTADOS')")
+    @Operation(summary = "Obtiene un estado por ID", description = "Recupera los detalles de un estado específico usando su ID único.")
+    @Parameter(name = "id", description = "ID único del estado", required = true, example = "1", schema = @Schema(type="integer", format="int64"))
+    @ApiResponse(responseCode = "200", description = "Estado encontrado",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = EstadoDTO.class)))
-    @ApiResponse(responseCode = "404", description = "Estado no encontrado") // Asumo que el servicio lanza 404
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    @ApiResponse(responseCode = "404", description = "Estado no encontrado", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
     public ResponseEntity<EstadoDTO> obtenerEstadoPorId(@PathVariable Long id) {
+        log.info("GET /api/estados/{} - Solicitud para obtener estado por ID", id);
         EstadoDTO estado = estadoService.obtenerEstadoPorId(id);
+        log.info("GET /api/estados/{} - Estado encontrado: Tipo={}, Valor='{}'", id, estado.getTipoEstado(), estado.getValor());
         return new ResponseEntity<>(estado, HttpStatus.OK);
     }
 
-    /**
-     * Endpoint para crear un nuevo estado.
-     * Responde a POST /api/estados
-     * @param estadoDTO El DTO con los datos del estado a crear.
-     * @return ResponseEntity con el estado creado y estado CREATED.
-     */
     @PostMapping
-    // Ejemplo: Permitir a ADMIN y GERENTE crear estados
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
-    @Operation(summary = "Crea un nuevo estado", description = "Registra un nuevo estado en el sistema.")
-    @RequestBody(description = "Datos del estado a crear", required = true,
+    @PreAuthorize("hasAuthority('CREAR_ESTADO')")
+    @Operation(summary = "Crea un nuevo estado", description = "Registra un nuevo estado en el sistema, especificando su tipo y valor. La combinación tipo/valor debe ser única.")
+    // Usar @RequestBody de Swagger para describir el cuerpo esperado
+    @RequestBody(description = "Datos del estado a crear (tipoEstado y valor son obligatorios)", required = true,
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = EstadoDTO.class))) // Describe cuerpo solicitud
+                    schema = @Schema(implementation = EstadoDTO.class)))
     @ApiResponse(responseCode = "201", description = "Estado creado exitosamente",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = EstadoDTO.class)))
-    @ApiResponse(responseCode = "400", description = "Datos de solicitud inválidos")
-    @ApiResponse(responseCode = "409", description = "Conflicto (ej: estado duplicado si aplica)") // O tu excepción
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<EstadoDTO> crearEstado(@Valid @RequestBody EstadoDTO estadoDTO) {
+    @ApiResponse(responseCode = "400", description = "Datos inválidos (ej. campos faltantes)", content = @Content)
+    @ApiResponse(responseCode = "409", description = "Conflicto - Ya existe un estado con ese tipo y valor", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    // Usar @Valid de Jakarta y @RequestBody de Spring para el parámetro
+    public ResponseEntity<EstadoDTO> crearEstado(@Valid @org.springframework.web.bind.annotation.RequestBody EstadoDTO estadoDTO) {
+
+        // ----- INICIO: Log de Depuración Temporal -----
+        // Mostramos el objeto DTO completo tal como lo recibe el controlador (usa el método toString() del DTO)
+        log.info(">>> [DEBUG] EstadoDTO Recibido en Controller: {}", estadoDTO);
+        // Verificamos explícitamente los valores de los campos problemáticos
+        if (estadoDTO != null) {
+            log.info(">>> [DEBUG] DTO.tipoEstado: {}", estadoDTO.getTipoEstado()); // Loguea el valor de tipoEstado
+            log.info(">>> [DEBUG] DTO.valor: '{}'", estadoDTO.getValor()); // Loguea el valor de valor
+        } else {
+            log.info(">>> [DEBUG] EstadoDTO Recibido es NULL"); // Si el DTO completo es null
+        }
+        // ----- FIN: Log de Depuración Temporal -----
+
+        // Lógica original del controlador
+        log.info("POST /api/estados - Solicitud para crear estado: Tipo={}, Valor='{}'", estadoDTO.getTipoEstado(), estadoDTO.getValor());
         EstadoDTO nuevoEstado = estadoService.crearEstado(estadoDTO);
+        log.info("POST /api/estados - Estado creado: Tipo={}, Valor='{}'", nuevoEstado.getTipoEstado(), nuevoEstado.getValor());
         return new ResponseEntity<>(nuevoEstado, HttpStatus.CREATED);
     }
 
-    /**
-     * Endpoint para actualizar un estado existente.
-     * Responde a PUT /api/estados/{id}
-     * @param id El ID del estado a actualizar.
-     * @param estadoDTO El DTO con los datos actualizados del estado.
-     * @return ResponseEntity con el estado actualizado y estado OK, o NOT_FOUND si no existe.
-     */
     @PutMapping("/{id}")
-    // Ejemplo: Permitir a ADMIN y GERENTE actualizar estados
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
-    @Operation(summary = "Actualiza un estado existente", description = "Modifica los detalles de un estado usando su ID.")
-    @Parameter(name = "id", description = "ID del estado a actualizar", required = true, example = "1")
-    @RequestBody(description = "Datos actualizados del estado", required = true,
+    @PreAuthorize("hasAuthority('EDITAR_ESTADO')")
+    @Operation(summary = "Actualiza un estado existente", description = "Modifica el tipo y/o valor de un estado existente.")
+    @Parameter(name = "id", description = "ID del estado a actualizar", required = true, example = "1", schema = @Schema(type="integer", format="int64"))
+    // Usar @RequestBody de Swagger para describir el cuerpo esperado
+    @RequestBody(description = "Datos actualizados del estado (tipoEstado y valor)", required = true,
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = EstadoDTO.class)))
     @ApiResponse(responseCode = "200", description = "Estado actualizado exitosamente",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = EstadoDTO.class)))
-    @ApiResponse(responseCode = "400", description = "Datos de solicitud inválidos")
-    @ApiResponse(responseCode = "404", description = "Estado no encontrado")
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Estado no encontrado", content = @Content)
+    @ApiResponse(responseCode = "409", description = "Conflicto - Ya existe otro estado con ese tipo y valor", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    // Usar @Valid de Jakarta y @RequestBody de Spring para el parámetro
     public ResponseEntity<EstadoDTO> actualizarEstado(
             @PathVariable Long id,
-            @Valid @RequestBody EstadoDTO estadoDTO
+            @Valid @org.springframework.web.bind.annotation.RequestBody EstadoDTO estadoDTO
     ) {
+        // --- Aquí también podrías añadir logs de depuración si el error ocurre al actualizar ---
+        log.info(">>> [DEBUG] EstadoDTO Recibido en PUT /api/estados/{}: {}", id, estadoDTO);
+        if (estadoDTO != null) {
+            log.info(">>> [DEBUG] PUT DTO.tipoEstado: {}", estadoDTO.getTipoEstado());
+            log.info(">>> [DEBUG] PUT DTO.valor: '{}'", estadoDTO.getValor());
+        }
+        // ----------------------------------------------------------------------------------
+
+        log.info("PUT /api/estados/{} - Solicitud para actualizar estado a: Tipo={}, Valor='{}'", id, estadoDTO.getTipoEstado(), estadoDTO.getValor());
         EstadoDTO estadoActualizado = estadoService.actualizarEstado(id, estadoDTO);
+        log.info("PUT /api/estados/{} - Estado actualizado", id);
         return new ResponseEntity<>(estadoActualizado, HttpStatus.OK);
     }
 
-    /**
-     * Endpoint para eliminar un estado por su ID.
-     * Responde a DELETE /api/estados/{id}
-     * @param id El ID del estado a eliminar.
-     * @return ResponseEntity con estado NO_CONTENT si la eliminación es exitosa, o NOT_FOUND si no existe.
-     */
     @DeleteMapping("/{id}")
-    // Ejemplo: Solo ADMIN puede eliminar estados
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Elimina un estado", description = "Elimina un estado del sistema usando su ID.")
-    @Parameter(name = "id", description = "ID del estado a eliminar", required = true, example = "1")
-    @ApiResponse(responseCode = "204", description = "Estado eliminado exitosamente")
-    @ApiResponse(responseCode = "404", description = "Estado no encontrado")
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    @PreAuthorize("hasAuthority('ELIMINAR_ESTADO')")
+    @Operation(summary = "Elimina un estado", description = "Elimina un estado del sistema. Falla si el estado está actualmente en uso.")
+    @Parameter(name = "id", description = "ID del estado a eliminar", required = true, example = "1", schema = @Schema(type="integer", format="int64"))
+    @ApiResponse(responseCode = "204", description = "Estado eliminado exitosamente", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Estado no encontrado", content = @Content)
+    @ApiResponse(responseCode = "409", description = "Conflicto - El estado está en uso y no se puede eliminar", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
     public ResponseEntity<Void> eliminarEstado(@PathVariable Long id) {
+        log.info("DELETE /api/estados/{} - Solicitud para eliminar estado", id);
         estadoService.eliminarEstado(id);
+        log.info("DELETE /api/estados/{} - Estado eliminado", id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // ========== ENDPOINTS ADICIONALES (Opcionales) ========== //
-
-    /**
-     * Endpoint para listar estados por tipo.
-     * Responde a GET /api/estados/tipo/{tipo}
-     * @param tipo El TipoEstado (enum) por el cual filtrar.
-     * @return ResponseEntity con la lista de estados filtrados y estado OK.
-     */
     @GetMapping("/tipo/{tipo}")
-    // Ejemplo: Permitir a todos los roles operativos listar estados por tipo
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Lista estados por tipo", description = "Obtiene una lista de estados filtrados por su tipo (Pedido, Usuario, etc.).")
-    @Parameter(name = "tipo", description = "Tipo de Estado (enum)", required = true, example = "PEDIDO",
-            schema = @Schema(implementation = TipoEstado.class)) // Documenta el enum como parámetro
-    @ApiResponse(responseCode = "200", description = "Estados encontrados",
+    @PreAuthorize("hasAuthority('BUSCAR_ESTADOS')")
+    @Operation(summary = "Lista estados por tipo", description = "Obtiene una lista de estados filtrados por su tipo (ej. PEDIDO, ITEM).")
+    @Parameter(name = "tipo", description = "Tipo de Estado a filtrar (ACTIVO, INACTIVO, PENDIENTE, CANCELADO, PEDIDO, ITEM)", required = true, example = "PEDIDO", schema = @Schema(implementation = TipoEstado.class))
+    @ApiResponse(responseCode = "200", description = "Estados encontrados para el tipo especificado",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Estado.class))) // Asumo que el servicio devuelve Estado, no EstadoDTO
-    @ApiResponse(responseCode = "400", description = "Tipo de estado inválido") // Si el String no coincide con un enum
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<List<Estado>> listarEstadosPorTipo(@PathVariable TipoEstado tipo) {
-        List<Estado> estados = estadoService.listarEstadosPedido(); // Corregido para usar el método correcto
-        return new ResponseEntity<>(estados, HttpStatus.OK);
+                    array = @ArraySchema(schema = @Schema(implementation = EstadoDTO.class))))
+    @ApiResponse(responseCode = "400", description = "Tipo de estado inválido", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<List<EstadoDTO>> listarEstadosPorTipo(@PathVariable TipoEstado tipo) {
+        log.info("GET /api/estados/tipo/{} - Solicitud para listar estados por tipo", tipo);
+        List<Estado> estados = estadoService.listarEstadosPorTipo(tipo);
+        List<EstadoDTO> dtos = estados.stream()
+                .map(estadoMapper::toDTO)
+                .collect(Collectors.toList());
+        log.info("GET /api/estados/tipo/{} - Encontrados {} estados", tipo, dtos.size());
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
-    /**
-     * Endpoint para obtener la lista de todos los Tipos de Estado disponibles (enum).
-     * Responde a GET /api/estados/tipos
-     * @return ResponseEntity con la lista de valores del enum TipoEstado y estado OK.
-     */
     @GetMapping("/tipos")
-    // Ejemplo: Permitir a todos los roles operativos listar tipos de estado disponibles
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Lista todos los tipos de estado disponibles", description = "Obtiene una lista de todos los posibles valores del enum TipoEstado.")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Lista todos los tipos de estado disponibles", description = "Obtiene los nombres de todos los posibles valores del enum TipoEstado (ej. \"PEDIDO\", \"ITEM\").")
     @ApiResponse(responseCode = "200", description = "Tipos de estado obtenidos exitosamente",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = TipoEstado.class))) // Describe la lista de enums
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<List<TipoEstado>> listarTiposDisponibles() {
-        List<TipoEstado> tipos = estadoService.listarTiposEstadoDisponibles();
-        return new ResponseEntity<>(tipos, HttpStatus.OK);
+                    array = @ArraySchema(schema = @Schema(type = "string", example = "PEDIDO"))))
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<List<String>> listarTiposDisponibles() {
+        log.info("GET /api/estados/tipos - Solicitud para listar tipos de estado disponibles");
+        List<TipoEstado> tiposEnum = estadoService.listarTiposEstadoDisponibles();
+        List<String> tiposString = tiposEnum.stream().map(Enum::name).collect(Collectors.toList());
+        log.info("GET /api/estados/tipos - Tipos disponibles: {}", tiposString);
+        return new ResponseEntity<>(tiposString, HttpStatus.OK);
     }
 
-
     @GetMapping("/buscar")
-    // Ejemplo: Permitir a todos los roles operativos buscar estados por valor
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Busca estados por valor", description = "Obtiene una lista de estados cuyo valor coincide con un texto de búsqueda.")
-    @Parameter(name = "valor", description = "Texto para buscar en el valor del estado", required = true, example = "Pendiente")
-    @ApiResponse(responseCode = "200", description = "Estados encontrados",
+    @PreAuthorize("hasAuthority('BUSCAR_ESTADOS')")
+    @Operation(summary = "Busca estados por valor", description = "Obtiene estados cuyo campo 'valor' contiene el texto de búsqueda (case-insensitive).")
+    @Parameter(name = "valor", description = "Texto para buscar en el valor del estado", required = true, example = "Pend")
+    @ApiResponse(responseCode = "200", description = "Estados encontrados que coinciden con la búsqueda",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Estado.class))) // Asumo que el servicio devuelve Estado
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<List<Estado>> buscarEstadosPorValor(@RequestParam String valor) {
+                    array = @ArraySchema(schema = @Schema(implementation = EstadoDTO.class))))
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<List<EstadoDTO>> buscarEstadosPorValor(@RequestParam String valor) {
+        log.info("GET /api/estados/buscar?valor={} - Solicitud para buscar estados por valor", valor);
         List<Estado> estados = estadoService.buscarEstadosPorValor(valor);
-        return new ResponseEntity<>(estados, HttpStatus.OK);
+        List<EstadoDTO> dtos = estados.stream()
+                .map(estadoMapper::toDTO)
+                .collect(Collectors.toList());
+        log.info("GET /api/estados/buscar?valor={} - Encontrados {} estados", valor, dtos.size());
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 }

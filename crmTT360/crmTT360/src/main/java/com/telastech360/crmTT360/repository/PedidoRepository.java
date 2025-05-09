@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional; // Importar Optional
 
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
@@ -42,7 +43,6 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     @Query("SELECT e.valor, COUNT(p) FROM Pedido p JOIN p.estado e GROUP BY e.valor")
     List<Object[]> getEstadisticasPorEstado();
 
-    // Corregido: Cambiado 'pd.item.itemId' a 'pd.producto.itemId'
     @Query("SELECT DISTINCT p FROM Pedido p JOIN p.detalles pd WHERE pd.producto.itemId = :itemId")
     List<Pedido> findPedidosConteniendoItem(@Param("itemId") Long itemId);
 
@@ -57,4 +57,14 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
     @Query("SELECT COUNT(p) > 0 FROM Pedido p WHERE p.estado.estadoId = :estadoId")
     boolean existsByEstadoId(@Param("estadoId") Long estadoId);
+
+    /**
+     * Busca un pedido por su ID, cargando EAGERLY la colección de detalles
+     * para evitar el problema N+1.
+     *
+     * @param id ID del pedido a buscar.
+     * @return Optional<Pedido> con el pedido y sus detalles inicializados, o vacío si no se encuentra.
+     */
+    @Query("SELECT p FROM Pedido p LEFT JOIN FETCH p.detalles WHERE p.pedidoId = :id")
+    Optional<Pedido> findByIdWithDetails(@Param("id") Long id);
 }

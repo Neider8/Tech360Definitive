@@ -16,8 +16,6 @@
 
 
 -- Volcando estructura de base de datos para telastech360
-CREATE DATABASE IF NOT EXISTS `telastech360` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
-USE `telastech360`;
 
 -- Volcando estructura para tabla telastech360.bodega
 CREATE TABLE IF NOT EXISTS `bodega` (

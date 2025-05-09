@@ -1,17 +1,26 @@
+// src/main/java/com/telastech360/crmTT360/controller/PedidoController.java
 package com.telastech360.crmTT360.controller;
 
+import com.telastech360.crmTT360.dto.PedidoDTO;
+import com.telastech360.crmTT360.entity.ClienteInterno; // <-- Importación añadida
+import com.telastech360.crmTT360.entity.Estado;       // <-- Importación añadida
 import com.telastech360.crmTT360.entity.Pedido;
+import com.telastech360.crmTT360.mapper.PedidoMapper;
 import com.telastech360.crmTT360.service.PedidoService;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal; // Importación necesaria para trabajar con BigDecimal
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.List;
-
-// Importa la anotación PreAuthorize (ya estaba)
-import org.springframework.security.access.prepost.PreAuthorize;
+import java.util.stream.Collectors;
 
 // Importaciones de Swagger/OpenAPI
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,189 +29,185 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody; // Importa RequestBody de swagger
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 
-
+/**
+ * Controlador REST para gestionar las operaciones CRUD y consultas relacionadas con los Pedidos.
+ */
 @RestController
 @RequestMapping("/api/pedidos")
-@Tag(name = "Pedidos", description = "Gestión de Pedidos en el sistema") // Anotación Tag
+@Tag(name = "Pedidos", description = "Gestión de Pedidos de Clientes")
 public class PedidoController {
 
+    private static final Logger log = LoggerFactory.getLogger(PedidoController.class);
+
     private final PedidoService pedidoService;
+    private final PedidoMapper pedidoMapper;
 
     @Autowired
-    public PedidoController(PedidoService pedidoService) {
+    public PedidoController(PedidoService pedidoService, PedidoMapper pedidoMapper) {
         this.pedidoService = pedidoService;
+        this.pedidoMapper = pedidoMapper;
     }
 
-    // ========== ENDPOINTS CRUD ========== //
-
-    /**
-     * Listar todos los pedidos.
-     *
-     * @return Lista de pedidos.
-     */
+    // --- listarTodosLosPedidos, obtenerPedidoPorId, crearPedido (sin cambios respecto a la versión anterior) ---
     @GetMapping
-    // Ejemplo: Permitir a todos los roles operativos listar pedidos
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Lista todos los pedidos", description = "Obtiene una lista de todos los pedidos registrados en el sistema.")
+    @PreAuthorize("hasAuthority('LEER_PEDIDO')")
+    @Operation(summary = "Lista todos los pedidos", description = "Obtiene una lista completa de todos los pedidos registrados en el sistema.")
     @ApiResponse(responseCode = "200", description = "Lista de pedidos obtenida exitosamente",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Pedido.class))) // Describe la respuesta
-    @ApiResponse(responseCode = "401", description = "No autenticado") // Describe posibles errores
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<List<Pedido>> listarTodosLosPedidos() {
+                    array = @ArraySchema(schema = @Schema(implementation = PedidoDTO.class))))
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<List<PedidoDTO>> listarTodosLosPedidos() {
+        log.info("GET /api/pedidos - Solicitud para listar todos los pedidos");
         List<Pedido> pedidos = pedidoService.listarTodosLosPedidos();
-        return new ResponseEntity<>(pedidos, HttpStatus.OK);
+        List<PedidoDTO> dtos = pedidos.stream()
+                .map(pedidoMapper::toDTO)
+                .collect(Collectors.toList());
+        log.info("GET /api/pedidos - Devolviendo {} pedidos", dtos.size());
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
-
 
     @GetMapping("/{id}")
-    // Ejemplo: Permitir a todos los roles operativos obtener un pedido por ID
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Obtiene un pedido por ID", description = "Recupera los detalles de un pedido específico usando su ID.")
-    @Parameter(name = "id", description = "ID del pedido a obtener", required = true, example = "1") // Describe parámetro
+    @PreAuthorize("hasAuthority('LEER_PEDIDO')")
+    @Operation(summary = "Obtiene un pedido por ID", description = "Recupera los detalles completos de un pedido específico, incluyendo sus ítems.")
+    @Parameter(name = "id", description = "ID único del pedido", required = true, example = "1", schema = @Schema(type="integer", format="int64"))
     @ApiResponse(responseCode = "200", description = "Pedido encontrado exitosamente",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Pedido.class)))
-    @ApiResponse(responseCode = "404", description = "Pedido no encontrado") // Asumo que el servicio lanza 404
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<Pedido> obtenerPedidoPorId(@PathVariable Long id) {
+                    schema = @Schema(implementation = PedidoDTO.class)))
+    @ApiResponse(responseCode = "404", description = "Pedido no encontrado", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<PedidoDTO> obtenerPedidoPorId(@PathVariable Long id) {
+        log.info("GET /api/pedidos/{} - Solicitud para obtener pedido por ID", id);
         Pedido pedido = pedidoService.obtenerPedidoPorId(id);
-        return new ResponseEntity<>(pedido, HttpStatus.OK);
+        PedidoDTO dto = pedidoMapper.toDTO(pedido);
+        log.info("GET /api/pedidos/{} - Pedido encontrado. Cliente ID: {}, Estado ID: {}, #Detalles: {}", id, dto.getClienteId(), dto.getEstadoId(), dto.getDetalles().size());
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    /**
-     * Crear un nuevo pedido.
-     *
-     * @param pedido Datos del pedido a crear.
-     * @return Pedido creado.
-     */
     @PostMapping
-    // Ejemplo: Permitir a ADMIN, GERENTE y CAJERO crear pedidos
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO')")
-    @Operation(summary = "Crea un nuevo pedido", description = "Registra un nuevo pedido en el sistema.")
-    @RequestBody(description = "Datos del pedido a crear", required = true,
+    @PreAuthorize("hasAuthority('CREAR_PEDIDO')")
+    @Operation(summary = "Crea un nuevo pedido", description = "Registra un nuevo pedido con su cliente, estado inicial y la lista de ítems solicitados (detalles).")
+    @RequestBody(description = "Datos del pedido a crear. Debe incluir clienteId, estadoId y una lista no vacía de detalles (con itemId, cantidad y precioUnitario).", required = true,
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Pedido.class))) // Describe cuerpo solicitud (usando la entidad)
+                    schema = @Schema(implementation = PedidoDTO.class)))
     @ApiResponse(responseCode = "201", description = "Pedido creado exitosamente",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Pedido.class))) // Describe respuesta
-    @ApiResponse(responseCode = "400", description = "Datos de solicitud inválidos")
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<Pedido> crearPedido(@RequestBody Pedido pedido) {
-        Pedido nuevoPedido = pedidoService.crearPedido(pedido);
-        return new ResponseEntity<>(nuevoPedido, HttpStatus.CREATED);
+                    schema = @Schema(implementation = PedidoDTO.class)))
+    @ApiResponse(responseCode = "400", description = "Datos inválidos (DTO, lista detalles vacía, cantidad/precio inválido)", content = @Content)
+    @ApiResponse(responseCode = "404", description = "No encontrado - Cliente, Estado o algún Ítem no existe", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<PedidoDTO> crearPedido(@Valid @RequestBody PedidoDTO pedidoDto) {
+        log.info("POST /api/pedidos - Solicitud para crear pedido para cliente ID {}", pedidoDto.getClienteId());
+        Pedido pedidoCreado = pedidoService.crearPedidoConDetalles(pedidoDto);
+        PedidoDTO responseDto = pedidoMapper.toDTO(pedidoCreado);
+        log.info("POST /api/pedidos - Pedido creado con ID: {}", responseDto.getPedidoId());
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
-
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO')")
-    @Operation(summary = "Actualiza un pedido existente", description = "Modifica los detalles de un pedido usando su ID.")
-    @Parameter(name = "id", description = "ID del pedido a actualizar", required = true, example = "1")
-    @RequestBody(description = "Datos actualizados del pedido", required = true,
+    @PreAuthorize("hasAuthority('EDITAR_PEDIDO')")
+    @Operation(summary = "Actualiza información principal de un pedido", description = "Modifica el cliente, estado y/o fecha de fin de un pedido. NO modifica los ítems (detalles).")
+    @Parameter(name = "id", description = "ID del pedido a actualizar", required = true, example = "1", schema = @Schema(type="integer", format="int64"))
+    @RequestBody(description = "Datos actualizados del pedido (solo se consideran clienteId, estadoId; la lista de detalles es ignorada aquí)", required = true,
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Pedido.class))) // Describe cuerpo solicitud (usando la entidad)
+                    schema = @Schema(implementation = PedidoDTO.class))) // Reutiliza PedidoDTO
     @ApiResponse(responseCode = "200", description = "Pedido actualizado exitosamente",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Pedido.class))) // Describe respuesta
-    @ApiResponse(responseCode = "400", description = "Datos de solicitud inválidos")
-    @ApiResponse(responseCode = "404", description = "Pedido no encontrado")
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<Pedido> actualizarPedido(@PathVariable Long id, @RequestBody Pedido pedidoActualizado) {
-        Pedido pedido = pedidoService.actualizarPedido(id, pedidoActualizado);
-        return new ResponseEntity<>(pedido, HttpStatus.OK);
+                    schema = @Schema(implementation = PedidoDTO.class)))
+    @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content)
+    @ApiResponse(responseCode = "404", description = "No encontrado - Pedido, Cliente o Estado no existe", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<PedidoDTO> actualizarPedido(
+            @PathVariable Long id,
+            @Valid @RequestBody PedidoDTO pedidoDto // La validación @NotEmpty de detalles no aplica aquí
+    ) {
+        log.info("PUT /api/pedidos/{} - Solicitud para actualizar información principal del pedido", id);
+
+        // Llamar al servicio pasando el DTO directamente
+        Pedido pedidoActualizado = pedidoService.actualizarPedido(id, pedidoDto);
+
+        PedidoDTO responseDto = pedidoMapper.toDTO(pedidoActualizado);
+        log.info("PUT /api/pedidos/{} - Información principal del pedido actualizada", id);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
 
     @DeleteMapping("/{id}")
-    // Ejemplo: Permitir a ADMIN y GERENTE eliminar pedidos
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
-    @Operation(summary = "Elimina un pedido", description = "Elimina un pedido del sistema usando su ID.")
-    @Parameter(name = "id", description = "ID del pedido a eliminar", required = true, example = "1")
-    @ApiResponse(responseCode = "204", description = "Pedido eliminado exitosamente")
-    @ApiResponse(responseCode = "404", description = "Pedido no encontrado")
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    @PreAuthorize("hasAuthority('ELIMINAR_PEDIDO')")
+    @Operation(summary = "Elimina un pedido", description = "Elimina un pedido y todos sus detalles asociados. Falla si el pedido tiene facturas.")
+    @Parameter(name = "id", description = "ID del pedido a eliminar", required = true, example = "1", schema = @Schema(type="integer", format="int64"))
+    @ApiResponse(responseCode = "204", description = "Pedido eliminado exitosamente", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Pedido no encontrado", content = @Content)
+    @ApiResponse(responseCode = "409", description = "Conflicto - El pedido tiene facturas asociadas", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
     public ResponseEntity<Void> eliminarPedido(@PathVariable Long id) {
+        log.info("DELETE /api/pedidos/{} - Solicitud para eliminar pedido", id);
         pedidoService.eliminarPedido(id);
+        log.info("DELETE /api/pedidos/{} - Pedido eliminado", id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // ========== ENDPOINTS ADICIONALES (Opcionales) ========== //
-
-    /**
-     * Buscar pedidos por cliente.
-     *
-     * @param clienteId ID del cliente.
-     * @return Lista de pedidos filtrados.
-     */
+    // --- Endpoints Adicionales (sin cambios respecto a la versión anterior) ---
     @GetMapping("/cliente/{clienteId}")
-    // Ejemplo: Permitir a todos los roles operativos buscar pedidos por cliente
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Busca pedidos por cliente", description = "Obtiene una lista de pedidos asociados a un cliente específico.")
-    @Parameter(name = "clienteId", description = "ID del cliente", required = true, example = "10")
-    @ApiResponse(responseCode = "200", description = "Pedidos encontrados",
+    @PreAuthorize("hasAuthority('LEER_PEDIDO')")
+    @Operation(summary = "Busca pedidos por cliente", description = "Obtiene una lista de todos los pedidos realizados por un cliente específico.")
+    @Parameter(name = "clienteId", description = "ID del cliente", required = true, example = "10", schema = @Schema(type="integer", format="int64"))
+    @ApiResponse(responseCode = "200", description = "Pedidos encontrados para el cliente",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Pedido.class))) // Describe la respuesta
-    @ApiResponse(responseCode = "404", description = "Cliente no encontrado (si aplica en tu servicio)")
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<List<Pedido>> buscarPedidosPorCliente(@PathVariable Long clienteId) {
+                    array = @ArraySchema(schema = @Schema(implementation = PedidoDTO.class))))
+    @ApiResponse(responseCode = "404", description = "Cliente no encontrado", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<List<PedidoDTO>> buscarPedidosPorCliente(@PathVariable Long clienteId) {
+        log.info("GET /api/pedidos/cliente/{} - Buscando pedidos por cliente", clienteId);
         List<Pedido> pedidos = pedidoService.buscarPedidosPorCliente(clienteId);
-        return new ResponseEntity<>(pedidos, HttpStatus.OK);
+        List<PedidoDTO> dtos = pedidos.stream()
+                .map(pedidoMapper::toDTO)
+                .collect(Collectors.toList());
+        log.info("GET /api/pedidos/cliente/{} - Encontrados {} pedidos", clienteId, dtos.size());
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
-    /**
-     * Buscar pedidos por estado.
-     *
-     * @param estadoValor Valor del estado.
-     * @return Lista de pedidos filtrados.
-     */
     @GetMapping("/estado/{estadoValor}")
-    // Ejemplo: Permitir a todos los roles operativos buscar pedidos por estado
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Busca pedidos por estado", description = "Obtiene una lista de pedidos filtrados por el valor de su estado.")
-    @Parameter(name = "estadoValor", description = "Valor del estado (ej: 'Pendiente')", required = true, example = "Pendiente")
-    @ApiResponse(responseCode = "200", description = "Pedidos encontrados",
+    @PreAuthorize("hasAuthority('LEER_PEDIDO')")
+    @Operation(summary = "Busca pedidos por estado", description = "Obtiene una lista de pedidos que se encuentran en un estado específico (usando el valor del estado).")
+    @Parameter(name = "estadoValor", description = "Valor del estado a buscar (ej: Pendiente, Completado, Cancelado). Case-sensitive.", required = true, example = "Pendiente")
+    @ApiResponse(responseCode = "200", description = "Pedidos encontrados con el estado especificado",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Pedido.class))) // Describe la respuesta
-    @ApiResponse(responseCode = "400", description = "Valor de estado inválido (si tu servicio valida esto)")
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<List<Pedido>> buscarPedidosPorEstado(@PathVariable String estadoValor) {
+                    array = @ArraySchema(schema = @Schema(implementation = PedidoDTO.class))))
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<List<PedidoDTO>> buscarPedidosPorEstado(@PathVariable String estadoValor) {
+        log.info("GET /api/pedidos/estado/{} - Buscando pedidos por estado", estadoValor);
         List<Pedido> pedidos = pedidoService.buscarPedidosPorEstado(estadoValor);
-        return new ResponseEntity<>(pedidos, HttpStatus.OK);
+        List<PedidoDTO> dtos = pedidos.stream()
+                .map(pedidoMapper::toDTO)
+                .collect(Collectors.toList());
+        log.info("GET /api/pedidos/estado/{} - Encontrados {} pedidos", estadoValor, dtos.size());
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
-
 
     @GetMapping("/{id}/total")
-    // Ejemplo: Permitir a ADMIN, GERENTE y CAJERO calcular el total de un pedido
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO')")
-    @Operation(summary = "Calcula el total de un pedido", description = "Calcula el monto total de un pedido específico.")
-    @Parameter(name = "id", description = "ID del pedido para calcular el total", required = true, example = "1")
-    @ApiResponse(responseCode = "200", description = "Total del pedido calculado exitosamente",
+    @PreAuthorize("hasAuthority('LEER_PEDIDO')")
+    @Operation(summary = "Calcula el total de un pedido", description = "Calcula y devuelve el monto total de un pedido sumando los subtotales de todos sus detalles.")
+    @Parameter(name = "id", description = "ID del pedido", required = true, example = "1", schema = @Schema(type="integer", format="int64"))
+    @ApiResponse(responseCode = "200", description = "Total calculado exitosamente",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Double.class))) // Describe la respuesta (un Double)
-    @ApiResponse(responseCode = "404", description = "Pedido no encontrado")
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<Double> calcularTotalPedido(@PathVariable Long id) {
-        // Calcula el total del pedido usando BigDecimal para precisión
+                    schema = @Schema(implementation = BigDecimal.class)))
+    @ApiResponse(responseCode = "404", description = "Pedido no encontrado", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<BigDecimal> calcularTotalPedido(@PathVariable Long id) {
+        log.info("GET /api/pedidos/{}/total - Calculando total del pedido", id);
         BigDecimal total = pedidoService.calcularTotalPedido(id);
-
-        // Convierte el resultado a double antes de devolverlo
-        return new ResponseEntity<>(total.doubleValue(), HttpStatus.OK);
+        log.info("GET /api/pedidos/{}/total - Total calculado: {}", id, total);
+        return new ResponseEntity<>(total, HttpStatus.OK);
     }
 }

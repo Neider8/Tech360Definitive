@@ -5,7 +5,7 @@ import com.telastech360.crmTT360.entity.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import org.springframework.data.repository.query.Param; // <<<<<<<<<< AÑADIR esta importación
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,10 +13,19 @@ import java.util.Optional;
 @Repository
 public interface BodegaRepository extends JpaRepository<Bodega, Long> {
 
+    // <<<--- MÉTODO AÑADIDO --- >>>
+    /**
+     * Busca una bodega por su nombre exacto (case-sensitive por defecto).
+     * Si necesitas case-insensitive, usa findByNombreIgnoreCase.
+     * @param nombre El nombre de la bodega a buscar.
+     * @return Un Optional que contiene la Bodega si se encuentra, o vacío si no.
+     */
+    Optional<Bodega> findByNombre(String nombre);
+    // <<<---------------------- >>>
+
     boolean existsByNombre(String nombre);
     List<Bodega> findAllByOrderByNombreAsc();
 
-    // Añadido @Param
     @Query("SELECT COUNT(b) > 0 FROM Bodega b WHERE b.estado.estadoId = :estadoId")
     boolean existsByEstadoId(@Param("estadoId") Long estadoId);
 
@@ -24,15 +33,12 @@ public interface BodegaRepository extends JpaRepository<Bodega, Long> {
     List<Bodega> findByResponsable(Usuario responsable);
     List<Bodega> findByUbicacionContaining(String ubicacion);
 
-    // Asegurado stockDisponible
     @Query("SELECT b FROM Bodega b WHERE b.capacidadMaxima > (SELECT COALESCE(SUM(i.stockDisponible), 0) FROM Item i WHERE i.bodega = b)")
     List<Bodega> findBodegasConCapacidadDisponible();
 
-    // Añadido @Param
-    @Query("SELECT CASE WHEN COUNT(i) > 0 THEN true ELSE false END FROM Item i WHERE i.bodega.bodegaId = :bodegaId") // Asumo Bodega ID es 'bodegaId'
+    @Query("SELECT CASE WHEN COUNT(i) > 0 THEN true ELSE false END FROM Item i WHERE i.bodega.bodegaId = :bodegaId")
     boolean existsBodegaWithItems(@Param("bodegaId") Long bodegaId);
 
-    // Añadido @Param
     @Query("SELECT b FROM Bodega b WHERE (:nombre IS NULL OR b.nombre LIKE %:nombre%) AND (:tipo IS NULL OR b.tipoBodega = :tipo) AND (:estadoId IS NULL OR b.estado.estadoId = :estadoId)")
     List<Bodega> buscarBodegasFiltradas(@Param("nombre") String nombre, @Param("tipo") Bodega.TipoBodega tipo, @Param("estadoId") Long estadoId);
 }

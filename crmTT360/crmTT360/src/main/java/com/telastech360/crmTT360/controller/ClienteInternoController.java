@@ -1,20 +1,22 @@
+// src/main/java/com/telastech360/crmTT360/controller/ClienteInternoController.java
 package com.telastech360.crmTT360.controller;
 
 import com.telastech360.crmTT360.dto.ClienteInternoDTO;
 import com.telastech360.crmTT360.entity.ClienteInterno;
 import com.telastech360.crmTT360.mapper.ClienteInternoMapper;
 import com.telastech360.crmTT360.service.ClienteInternoService;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize; // Asegurar importación
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.util.List;
-
-// Importa la anotación PreAuthorize (ya estaba)
-import org.springframework.security.access.prepost.PreAuthorize;
+import java.util.stream.Collectors;
 
 // Importaciones de Swagger/OpenAPI
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,178 +25,207 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody; // Importa RequestBody de swagger
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 
-
+/**
+ * Controlador REST para gestionar las operaciones CRUD y consultas relacionadas con los Clientes Internos.
+ */
 @RestController
 @RequestMapping("/api/clientes-internos")
-@Tag(name = "Clientes Internos", description = "Gestión de Clientes Internos en el sistema") // Anotación Tag para el controlador
+@Tag(name = "Clientes Internos", description = "Gestión de Clientes Internos")
 public class ClienteInternoController {
 
+    private static final Logger log = LoggerFactory.getLogger(ClienteInternoController.class);
+
     private final ClienteInternoService clienteService;
-    private final ClienteInternoMapper clienteInternoMapper; // Inyectar el mapper si se usa directamente
+    private final ClienteInternoMapper clienteInternoMapper;
 
     @Autowired
     public ClienteInternoController(ClienteInternoService clienteService, ClienteInternoMapper clienteInternoMapper) {
         this.clienteService = clienteService;
-        this.clienteInternoMapper = clienteInternoMapper; // Inyectar mapper
+        this.clienteInternoMapper = clienteInternoMapper;
     }
 
     @GetMapping
-    // Ejemplo: Permitir a todos los roles operativos listar clientes internos
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Lista todos los clientes internos", description = "Obtiene una lista de todos los clientes internos registrados en el sistema.")
+    @PreAuthorize("hasAuthority('LEER_CLIENTES')") // Modificado
+    @Operation(summary = "Lista todos los clientes internos", description = "Obtiene una lista completa de todos los clientes internos registrados en el sistema.")
     @ApiResponse(responseCode = "200", description = "Lista de clientes obtenida exitosamente",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ClienteInterno.class)))
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<List<ClienteInterno>> listarTodosLosClientes() {
+                    array = @ArraySchema(schema = @Schema(implementation = ClienteInternoDTO.class))))
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<List<ClienteInternoDTO>> listarTodosLosClientes() {
+        log.info("GET /api/clientes-internos - Solicitud para listar todos los clientes");
         List<ClienteInterno> clientes = clienteService.listarTodosLosClientes();
-        return new ResponseEntity<>(clientes, HttpStatus.OK);
+        List<ClienteInternoDTO> dtos = clientes.stream()
+                .map(clienteInternoMapper::toDTO)
+                .collect(Collectors.toList());
+        log.info("GET /api/clientes-internos - Devolviendo {} clientes", dtos.size());
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    // Ejemplo: Permitir a todos los roles operativos obtener detalles de un cliente
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Obtiene un cliente interno por ID", description = "Recupera los detalles de un cliente interno específico usando su ID.")
-    @Parameter(name = "id", description = "ID del cliente interno a obtener", required = true, example = "1")
-    @ApiResponse(responseCode = "200", description = "Cliente interno encontrado exitosamente",
+    @PreAuthorize("hasAuthority('LEER_CLIENTES')") // Modificado
+    @Operation(summary = "Obtiene un cliente interno por ID", description = "Recupera los detalles completos de un cliente interno específico usando su ID.")
+    @Parameter(name = "id", description = "ID único del cliente interno", required = true, example = "1", schema = @Schema(type = "integer", format = "int64"))
+    @ApiResponse(responseCode = "200", description = "Cliente encontrado exitosamente",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ClienteInterno.class)))
-    @ApiResponse(responseCode = "404", description = "Cliente interno no encontrado")
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<ClienteInterno> obtenerClientePorId(@PathVariable Long id) {
-        ClienteInterno cliente = clienteService.obtenerClientePorId(id); // Asumo que el servicio lanza 404
-        return new ResponseEntity<>(cliente, HttpStatus.OK);
+                    schema = @Schema(implementation = ClienteInternoDTO.class)))
+    @ApiResponse(responseCode = "404", description = "Cliente no encontrado", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<ClienteInternoDTO> obtenerClientePorId(@PathVariable Long id) {
+        log.info("GET /api/clientes-internos/{} - Solicitud para obtener cliente por ID", id);
+        ClienteInterno cliente = clienteService.obtenerClientePorId(id);
+        ClienteInternoDTO dto = clienteInternoMapper.toDTO(cliente);
+        log.info("GET /api/clientes-internos/{} - Cliente encontrado: {}", id, dto.getNombre());
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     @PostMapping
-    // Ejemplo: Permitir a ADMIN, GERENTE y CAJERO crear clientes internos
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO')")
-    @Operation(summary = "Crea un nuevo cliente interno", description = "Registra un nuevo cliente interno en el sistema.")
-    @RequestBody(description = "Datos del cliente interno a crear", required = true,
+    @PreAuthorize("hasAuthority('CREAR_CLIENTE')") // Modificado
+    @Operation(summary = "Crea un nuevo cliente interno", description = "Registra un nuevo cliente interno con su información básica y responsable.")
+    @RequestBody(description = "Datos del cliente interno a crear. Código, nombre, tipo y ID del responsable son obligatorios.", required = true,
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ClienteInternoDTO.class)))
-    @ApiResponse(responseCode = "201", description = "Cliente interno creado exitosamente",
+    @ApiResponse(responseCode = "201", description = "Cliente creado exitosamente",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ClienteInterno.class)))
-    @ApiResponse(responseCode = "400", description = "Datos de solicitud inválidos")
-    @ApiResponse(responseCode = "409", description = "Conflicto (ej: cliente duplicado si aplica)") // O tu excepción de duplicado
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<ClienteInterno> crearCliente(@Valid @RequestBody ClienteInternoDTO clienteDTO) {
-        ClienteInterno nuevoCliente = clienteService.crearCliente(clienteInternoMapper.toEntity(clienteDTO)); // Usar mapper
-        return new ResponseEntity<>(nuevoCliente, HttpStatus.CREATED);
+                    schema = @Schema(implementation = ClienteInternoDTO.class)))
+    @ApiResponse(responseCode = "400", description = "Datos inválidos (fallo de validación DTO o tipo inválido)", content = @Content)
+    @ApiResponse(responseCode = "409", description = "Conflicto - Código interno ya existe", content = @Content)
+    @ApiResponse(responseCode = "404", description = "No encontrado - Usuario responsable no existe", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<ClienteInternoDTO> crearCliente(@Valid @RequestBody ClienteInternoDTO clienteDto) {
+        log.info("POST /api/clientes-internos - Solicitud para crear cliente: {}", clienteDto.getCodigoInterno());
+        ClienteInterno clienteACrear = clienteInternoMapper.toEntity(clienteDto);
+        ClienteInterno nuevoCliente = clienteService.crearCliente(clienteACrear);
+        ClienteInternoDTO responseDto = clienteInternoMapper.toDTO(nuevoCliente);
+        log.info("POST /api/clientes-internos - Cliente '{}' creado con ID: {}", responseDto.getNombre(), nuevoCliente.getClienteId());
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    // Ejemplo: Permitir a ADMIN, GERENTE y CAJERO actualizar clientes internos
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO')")
-    @Operation(summary = "Actualiza un cliente interno existente", description = "Modifica los detalles de un cliente interno usando su ID.")
-    @Parameter(name = "id", description = "ID del cliente interno a actualizar", required = true, example = "1")
+    @PreAuthorize("hasAuthority('EDITAR_CLIENTE')") // Modificado
+    @Operation(summary = "Actualiza un cliente interno existente", description = "Modifica los detalles de un cliente interno, incluyendo su responsable.")
+    @Parameter(name = "id", description = "ID del cliente a actualizar", required = true, example = "1", schema = @Schema(type = "integer", format = "int64"))
     @RequestBody(description = "Datos actualizados del cliente interno", required = true,
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ClienteInternoDTO.class)))
-    @ApiResponse(responseCode = "200", description = "Cliente interno actualizado exitosamente",
+    @ApiResponse(responseCode = "200", description = "Cliente actualizado exitosamente",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ClienteInterno.class)))
-    @ApiResponse(responseCode = "400", description = "Datos de solicitud inválidos")
-    @ApiResponse(responseCode = "404", description = "Cliente interno no encontrado")
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<ClienteInterno> actualizarCliente(
+                    schema = @Schema(implementation = ClienteInternoDTO.class)))
+    @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content)
+    @ApiResponse(responseCode = "404", description = "No encontrado - Cliente o Usuario responsable no existe", content = @Content)
+    @ApiResponse(responseCode = "409", description = "Conflicto - Código interno ya existe", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<ClienteInternoDTO> actualizarCliente(
             @PathVariable Long id,
-            @Valid @RequestBody ClienteInternoDTO clienteDTO
+            @Valid @RequestBody ClienteInternoDTO clienteDto
     ) {
-        ClienteInterno clienteActualizado = clienteService.actualizarCliente(id, clienteInternoMapper.toEntity(clienteDTO)); // Usar mapper
-        return new ResponseEntity<>(clienteActualizado, HttpStatus.OK);
+        log.info("PUT /api/clientes-internos/{} - Solicitud para actualizar cliente", id);
+        ClienteInterno clienteActualizado = clienteInternoMapper.toEntity(clienteDto);
+        ClienteInterno clienteGuardado = clienteService.actualizarCliente(id, clienteActualizado);
+        ClienteInternoDTO responseDto = clienteInternoMapper.toDTO(clienteGuardado);
+        log.info("PUT /api/clientes-internos/{} - Cliente actualizado", id);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    // Ejemplo: Permitir a ADMIN y GERENTE eliminar clientes internos
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
-    @Operation(summary = "Elimina un cliente interno", description = "Elimina un cliente interno del sistema usando su ID.")
-    @Parameter(name = "id", description = "ID del cliente interno a eliminar", required = true, example = "1")
-    @ApiResponse(responseCode = "204", description = "Cliente interno eliminado exitosamente")
-    @ApiResponse(responseCode = "404", description = "Cliente interno no encontrado")
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    @PreAuthorize("hasAuthority('ELIMINAR_CLIENTE')") // Modificado
+    @Operation(summary = "Elimina un cliente interno", description = "Elimina un cliente interno del sistema. Falla si tiene pedidos asociados.")
+    @Parameter(name = "id", description = "ID del cliente a eliminar", required = true, example = "1", schema = @Schema(type = "integer", format = "int64"))
+    @ApiResponse(responseCode = "204", description = "Cliente eliminado exitosamente", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Cliente no encontrado", content = @Content)
+    @ApiResponse(responseCode = "409", description = "Conflicto - El cliente tiene pedidos asociados y no puede ser eliminado", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
     public ResponseEntity<Void> eliminarCliente(@PathVariable Long id) {
+        log.info("DELETE /api/clientes-internos/{} - Solicitud para eliminar cliente", id);
         clienteService.eliminarCliente(id);
+        log.info("DELETE /api/clientes-internos/{} - Cliente eliminado", id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // Endpoints adicionales para buscar por nombre, tipo, etc.
+    // --- Endpoints Adicionales ---
+
     @GetMapping("/buscar/nombre")
-    // Ejemplo: Permitir a todos los roles operativos buscar por nombre
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Busca clientes internos por nombre", description = "Obtiene una lista de clientes internos cuyo nombre coincide con un texto de búsqueda.")
-    @Parameter(name = "q", description = "Texto para buscar en el nombre del cliente", required = true, example = "Juan Perez")
+    @PreAuthorize("hasAuthority('BUSCAR_CLIENTES')") // Modificado (o LEER_CLIENTES)
+    @Operation(summary = "Busca clientes internos por nombre", description = "Obtiene una lista de clientes internos cuyo nombre contiene el texto de búsqueda (case-insensitive).")
+    @Parameter(name = "q", description = "Texto a buscar en el nombre del cliente", required = true, example = "Perez")
     @ApiResponse(responseCode = "200", description = "Clientes encontrados",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ClienteInterno.class)))
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<List<ClienteInterno>> buscarPorNombre(@RequestParam("q") String nombre) {
+                    array = @ArraySchema(schema = @Schema(implementation = ClienteInternoDTO.class))))
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<List<ClienteInternoDTO>> buscarPorNombre(@RequestParam("q") String nombre) {
+        log.info("GET /api/clientes-internos/buscar/nombre?q={} - Buscando por nombre", nombre);
         List<ClienteInterno> clientes = clienteService.buscarPorNombre(nombre);
-        return new ResponseEntity<>(clientes, HttpStatus.OK);
+        List<ClienteInternoDTO> dtos = clientes.stream()
+                .map(clienteInternoMapper::toDTO)
+                .collect(Collectors.toList());
+        log.info("GET /api/clientes-internos/buscar/nombre?q={} - Encontrados {} clientes", nombre, dtos.size());
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
     @GetMapping("/tipo/{tipo}")
-    // Ejemplo: Permitir a todos los roles operativos buscar por tipo
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Busca clientes internos por tipo", description = "Obtiene una lista de clientes internos filtrados por su tipo.")
-    @Parameter(name = "tipo", description = "Tipo de cliente (enum)", required = true, example = "DISTRIBUIDOR") // Ajusta el ejemplo según tu enum
+    @PreAuthorize("hasAuthority('BUSCAR_CLIENTES')") // Modificado (o LEER_CLIENTES)
+    @Operation(summary = "Busca clientes internos por tipo", description = "Obtiene una lista de clientes internos filtrados por su tipo (INTERNO o EXTERNO).")
+    @Parameter(name = "tipo", description = "Tipo de cliente (INTERNO, EXTERNO)", required = true, example = "EXTERNO", schema = @Schema(implementation = ClienteInterno.TipoCliente.class))
     @ApiResponse(responseCode = "200", description = "Clientes encontrados",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ClienteInterno.class)))
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<List<ClienteInterno>> buscarPorTipo(@PathVariable String tipo) {
-        // Necesitas convertir el String tipo a ClienteInterno en el servicio o aquí
-        List<ClienteInterno> clientes = clienteService.buscarPorTipo(ClienteInterno.TipoCliente.valueOf(tipo));
-        return new ResponseEntity<>(clientes, HttpStatus.OK);
+                    array = @ArraySchema(schema = @Schema(implementation = ClienteInternoDTO.class))))
+    @ApiResponse(responseCode = "400", description = "Tipo inválido", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<List<ClienteInternoDTO>> buscarPorTipo(@PathVariable ClienteInterno.TipoCliente tipo) {
+        log.info("GET /api/clientes-internos/tipo/{} - Buscando por tipo", tipo);
+        List<ClienteInterno> clientes = clienteService.buscarPorTipo(tipo);
+        List<ClienteInternoDTO> dtos = clientes.stream()
+                .map(clienteInternoMapper::toDTO)
+                .collect(Collectors.toList());
+        log.info("GET /api/clientes-internos/tipo/{} - Encontrados {} clientes", tipo, dtos.size());
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
     @GetMapping("/responsable/{responsableId}")
-    // Ejemplo: Permitir a todos los roles operativos buscar por responsable
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO', 'OPERARIO')")
-    @Operation(summary = "Busca clientes internos por responsable", description = "Obtiene una lista de clientes internos asociados a un responsable específico.")
-    @Parameter(name = "responsableId", description = "ID del usuario responsable del cliente", required = true, example = "10")
+    @PreAuthorize("hasAuthority('BUSCAR_CLIENTES')") // Modificado (o LEER_CLIENTES)
+    @Operation(summary = "Busca clientes internos por responsable", description = "Obtiene una lista de clientes internos asignados a un usuario responsable específico.")
+    @Parameter(name = "responsableId", description = "ID del usuario responsable", required = true, example = "10", schema = @Schema(type = "integer", format = "int64"))
     @ApiResponse(responseCode = "200", description = "Clientes encontrados",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ClienteInterno.class)))
-    @ApiResponse(responseCode = "404", description = "Responsable no encontrado (si tu servicio lanza ResourceNotFoundException)")
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<List<ClienteInterno>> buscarPorResponsable(@PathVariable Long responsableId) {
+                    array = @ArraySchema(schema = @Schema(implementation = ClienteInternoDTO.class))))
+    @ApiResponse(responseCode = "404", description = "Usuario responsable no encontrado", content = @Content)
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<List<ClienteInternoDTO>> buscarPorResponsable(@PathVariable Long responsableId) {
+        log.info("GET /api/clientes-internos/responsable/{} - Buscando por responsable", responsableId);
         List<ClienteInterno> clientes = clienteService.buscarPorResponsable(responsableId);
-        return new ResponseEntity<>(clientes, HttpStatus.OK);
+        List<ClienteInternoDTO> dtos = clientes.stream()
+                .map(clienteInternoMapper::toDTO)
+                .collect(Collectors.toList());
+        log.info("GET /api/clientes-internos/responsable/{} - Encontrados {} clientes", responsableId, dtos.size());
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
     @GetMapping("/presupuesto/mayor-que")
-    // Ejemplo: Permitir a ADMIN, GERENTE y CAJERO buscar por presupuesto mayor que
-    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAJERO')")
-    @Operation(summary = "Busca clientes internos con presupuesto mayor que", description = "Obtiene clientes internos cuyo presupuesto excede un monto especificado.")
-    @Parameter(name = "monto", description = "Monto mínimo del presupuesto", required = true, example = "10000.00")
+    @PreAuthorize("hasAuthority('BUSCAR_CLIENTES_POR_PRESUPUESTO')") // Modificado (permiso específico)
+    @Operation(summary = "Busca clientes con presupuesto mayor o igual que", description = "Obtiene clientes internos cuyo presupuesto anual es mayor o igual al monto especificado.")
+    @Parameter(name = "monto", description = "Monto mínimo del presupuesto anual a buscar", required = true, example = "10000.00", schema = @Schema(type = "number", format = "double"))
     @ApiResponse(responseCode = "200", description = "Clientes encontrados",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ClienteInterno.class)))
-    @ApiResponse(responseCode = "401", description = "No autenticado")
-    @ApiResponse(responseCode = "403", description = "No autorizado")
-    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<List<ClienteInterno>> buscarPorPresupuestoMayorQue(@RequestParam BigDecimal monto) {
+                    array = @ArraySchema(schema = @Schema(implementation = ClienteInternoDTO.class))))
+    @ApiResponse(responseCode = "403", description = "No autorizado", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    public ResponseEntity<List<ClienteInternoDTO>> buscarPorPresupuestoMayorQue(@RequestParam BigDecimal monto) {
+        log.info("GET /api/clientes-internos/presupuesto/mayor-que?monto={} - Buscando por presupuesto", monto);
         List<ClienteInterno> clientes = clienteService.buscarPorPresupuestoMayorQue(monto);
-        return new ResponseEntity<>(clientes, HttpStatus.OK);
+        List<ClienteInternoDTO> dtos = clientes.stream()
+                .map(clienteInternoMapper::toDTO)
+                .collect(Collectors.toList());
+        log.info("GET /api/clientes-internos/presupuesto/mayor-que?monto={} - Encontrados {} clientes", monto, dtos.size());
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 }

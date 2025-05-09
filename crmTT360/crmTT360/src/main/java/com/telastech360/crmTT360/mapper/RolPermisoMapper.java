@@ -2,64 +2,68 @@ package com.telastech360.crmTT360.mapper;
 
 import com.telastech360.crmTT360.dto.RolPermisoDTO;
 import com.telastech360.crmTT360.entity.RolPermiso;
-import com.telastech360.crmTT360.entity.Rol;     // Importar Rol
-import com.telastech360.crmTT360.entity.Permiso; // Importar Permiso
-import com.telastech360.crmTT360.entity.RolPermisoId; // Importar RolPermisoId
+import com.telastech360.crmTT360.entity.Rol;
+import com.telastech360.crmTT360.entity.Permiso;
+import com.telastech360.crmTT360.entity.RolPermisoId;
 import org.springframework.stereotype.Component;
 
-// Mapper para convertir entre la entidad RolPermiso y el DTO RolPermisoDTO.
+/**
+ * Componente Mapper responsable de convertir entre la entidad de unión {@link RolPermiso}
+ * y su DTO correspondiente ({@link RolPermisoDTO}), que típicamente solo contiene los IDs.
+ * Nota: En muchos casos con `@ManyToMany`, esta entidad y mapper explícitos no son necesarios.
+ */
 @Component
 public class RolPermisoMapper {
 
-    // Método para convertir una entidad RolPermiso a un RolPermisoDTO
+    /**
+     * Convierte una entidad {@link RolPermiso} a un {@link RolPermisoDTO}.
+     * Extrae los IDs de la clave compuesta.
+     *
+     * @param rolPermiso La entidad de unión RolPermiso. Si es null o su ID es null, retorna null.
+     * @return El DTO {@link RolPermisoDTO} con los IDs poblados, o null si la entrada fue null.
+     */
     public RolPermisoDTO toDTO(RolPermiso rolPermiso) {
+        if (rolPermiso == null || rolPermiso.getId() == null) {
+            return null;
+        }
         RolPermisoDTO dto = new RolPermisoDTO();
-        // Asegurarse de que la clave compuesta no sea null antes de acceder a los IDs
-        if (rolPermiso.getId() != null) {
-            dto.setRolId(rolPermiso.getId().getRolId());
-            dto.setPermisoId(rolPermiso.getId().getPermisoId());
-        }
-
-        /*
-        if (rolPermiso.getRol() != null) {
-            dto.setRolId(rolPermiso.getRol().getRolId());
-        }
-        if (rolPermiso.getPermiso() != null) {
-            dto.setPermisoId(rolPermiso.getPermiso().getPermisoId());
-        }
-        */
+        dto.setRolId(rolPermiso.getId().getRolId());
+        dto.setPermisoId(rolPermiso.getId().getPermisoId());
         return dto;
     }
 
-    // Método para convertir un RolPermisoDTO a una entidad RolPermiso.
-    // Requiere las entidades Rol y Permiso ya cargadas.
+    /**
+     * Convierte un {@link RolPermisoDTO} a una entidad {@link RolPermiso}.
+     * <strong>Importante:</strong> Requiere las entidades {@link Rol} y {@link Permiso}
+     * correspondientes a los IDs ya cargadas. Esta carga debe hacerse en el servicio.
+     *
+     * @param dto El DTO con los IDs del rol y permiso. Si es null, retorna null.
+     * @param rol La entidad {@link Rol} asociada (ya cargada). No puede ser null.
+     * @param permiso La entidad {@link Permiso} asociada (ya cargada). No puede ser null.
+     * @return La entidad de unión {@link RolPermiso} lista para ser guardada, o null si el DTO fue null.
+     * @throws NullPointerException si las entidades Rol o Permiso proporcionadas son null.
+     * @throws IllegalArgumentException si los IDs no coinciden.
+     */
     public RolPermiso toEntity(RolPermisoDTO dto, Rol rol, Permiso permiso) {
-        RolPermiso rolPermiso = new RolPermiso();
+        if (dto == null) {
+            return null;
+        }
+        if (rol == null || permiso == null) {
+            throw new NullPointerException("Las entidades Rol y Permiso no pueden ser null al mapear RolPermisoDTO a Entidad.");
+        }
+        if (!rol.getRolId().equals(dto.getRolId()) || !permiso.getPermisoId().equals(dto.getPermisoId())) {
+            throw new IllegalArgumentException("Los IDs en el DTO no coinciden con los IDs de las entidades proporcionadas.");
+        }
 
-        // Crear y establecer la clave compuesta
+        RolPermiso rolPermiso = new RolPermiso();
         RolPermisoId id = new RolPermisoId(dto.getRolId(), dto.getPermisoId());
         rolPermiso.setId(id);
-
-        // Establecer las entidades relacionadas
         rolPermiso.setRol(rol);
         rolPermiso.setPermiso(permiso);
 
         return rolPermiso;
     }
 
-    // Método para actualizar una entidad RolPermiso existente a partir de un RolPermisoDTO.
-    // En el caso de RolPermiso (una tabla de unión pura), la "actualización"
-    // generalmente implica crear o eliminar la entrada. Este método podría ser
-    // menos útil que para otras entidades, pero se incluye por completitud
-    // aunque su uso en el servicio sería limitado (quizás para verificar IDs).
-    public void updateEntityFromDTO(RolPermisoDTO dto, RolPermiso rolPermiso) {
-        // Para una entidad de unión, los IDs en la clave compuesta
-        // y las relaciones no suelen "actualizarse" en el sentido tradicional.
-        // Si los IDs cambian, en realidad es una nueva relación.
-        // Este método podría usarse solo para validar que los IDs del DTO
-        // coinciden con los de la entidad existente antes de una operación,
-        // pero la lógica principal de "actualización" de una relación RolPermiso
-        // se basa en operaciones de creación/eliminación.
-        // No hay atributos adicionales en RolPermiso que necesiten ser mapeados.
-    }
+    // --- Método updateEntityFromDTO eliminado por ser innecesario ---
+
 }

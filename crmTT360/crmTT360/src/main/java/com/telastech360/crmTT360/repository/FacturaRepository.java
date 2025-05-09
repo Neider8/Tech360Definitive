@@ -23,11 +23,11 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
     @Query("SELECT f FROM Factura f WHERE f.fechaCreacion BETWEEN :inicio AND :fin")
     List<Factura> findByFechaBetween(@Param("inicio") Timestamp inicio, @Param("fin") Timestamp fin);
 
-    // ===>>> CORRECCIÓN AQUÍ: Añadida la anotación @Query <<<===
+    // --- Corrección aplicada (ya presente en tu código) ---
     // Asume que la entidad Factura tiene un campo booleano 'estadoPago'
     @Query("SELECT f FROM Factura f WHERE f.estadoPago = false") // Consulta para facturas pendientes
     List<Factura> findFacturasPendientesDePago();
-    // ===========================================================
+    // -------------------------------------------------------
 
 
     @Query("SELECT FUNCTION('DATE', f.fechaCreacion), SUM(f.total) " +
@@ -43,16 +43,19 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
     @Query("SELECT f FROM Factura f WHERE f.total BETWEEN :minTotal AND :maxTotal")
     List<Factura> findByTotalBetween(@Param("minTotal") BigDecimal minTotal, @Param("maxTotal") BigDecimal maxTotal);
 
-    // <--- AÑADIDA: @Query explícita para existsByPedidoId usando pedido.pedidoId y @Param
+    // --- Corrección aplicada (ya presente en tu código) ---
     // Asumo que el ID de Pedido es 'pedidoId' y la relación en Factura se llama 'pedido'
     @Query("SELECT COUNT(f) > 0 FROM Factura f WHERE f.pedido.pedidoId = :pedidoId")
     boolean existsByPedidoId(@Param("pedidoId") Long pedidoId);
+    // -------------------------------------------------------
 
     @Modifying
     @Transactional
+    // --- Corrección aplicada (ya presente en tu código) ---
     // Corregido: Usar el nombre real de la propiedad ID en Factura (facturaId) y añadir @Param
     @Query("UPDATE Factura f SET f.estadoPago = :estadoPago WHERE f.facturaId = :id")
     int actualizarEstadoPago(@Param("id") Long id, @Param("estadoPago") boolean estadoPago);
+    // -------------------------------------------------------
 
     @Query("SELECT f FROM Factura f WHERE " +
             // Corregido: Usar el nombre real de la propiedad ID en Pedido (pedidoId) y añadir @Param

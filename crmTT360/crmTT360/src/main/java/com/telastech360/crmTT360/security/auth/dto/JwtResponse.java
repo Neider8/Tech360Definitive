@@ -3,7 +3,7 @@ package com.telastech360.crmTT360.security.auth.dto;
 import java.util.List;
 
 public class JwtResponse {
-    private String token;
+    private String token; // El token JWT generado
     private String type = "Bearer";
     private Long id;
     private String email;
@@ -16,11 +16,13 @@ public class JwtResponse {
         this.roles = roles;
     }
 
+    // --- ¡ASEGÚRATE DE QUE ESTE GETTER EXISTE Y ES PÚBLICO! ---
     public String getAccessToken() {
         return token;
     }
+    // -----------------------------------------------------------
 
-    public void setAccessToken(String accessToken) {
+    public void setAccessToken(String accessToken) { // Setter opcional
         this.token = accessToken;
     }
 
@@ -28,7 +30,7 @@ public class JwtResponse {
         return type;
     }
 
-    public void setTokenType(String tokenType) {
+    public void setTokenType(String tokenType) { // Setter opcional
         this.type = tokenType;
     }
 
@@ -36,7 +38,7 @@ public class JwtResponse {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Long id) { // Setter opcional
         this.id = id;
     }
 
@@ -44,11 +46,16 @@ public class JwtResponse {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(String email) { // Setter opcional
         this.email = email;
     }
 
     public List<String> getRoles() {
         return roles;
     }
+
+    // Setter para roles (generalmente no se usa)
+    // public void setRoles(List<String> roles) {
+    //    this.roles = roles;
+    // }
 }

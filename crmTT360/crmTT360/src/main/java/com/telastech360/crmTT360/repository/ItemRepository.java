@@ -2,7 +2,7 @@ package com.telastech360.crmTT360.repository;
 
 import com.telastech360.crmTT360.entity.Categoria;
 import com.telastech360.crmTT360.entity.Item;
-import com.telastech360.crmTT360.entity.Proveedor;
+import com.telastech360.crmTT360.entity.Proveedor; // Asegúrate que Proveedor esté importado
 import com.telastech360.crmTT360.entity.Item.TipoItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -21,6 +21,16 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findByNombreContainingIgnoreCase(String nombre);
     List<Item> findByTipoItem(TipoItem tipo);
     List<Item> findByCategoria(Categoria categoria);
+
+    // --- MÉTODO AÑADIDO ---
+    /**
+     * Busca todos los ítems asociados a un proveedor específico.
+     * @param proveedor La entidad Proveedor por la cual filtrar.
+     * @return Una lista de Items asociados al proveedor dado.
+     */
+    List<Item> findByProveedor(Proveedor proveedor);
+    // ----------------------
+
     long countByProveedor(Proveedor proveedor);
 
     @Query("SELECT COUNT(i) > 0 FROM Item i WHERE i.estado.estadoId = :estadoId")

@@ -35,9 +35,11 @@ public class Usuario {
     private String estado;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rol_id", foreignKey = @ForeignKey(foreignKeyDefinition = "ON DELETE SET NULL"))
+    // Corrección: Usar foreignKeyDefinition para ON DELETE SET NULL
+    @JoinColumn(name = "rol_id", foreignKey = @ForeignKey(name = "fk_usuario_rol", foreignKeyDefinition = "FOREIGN KEY (rol_id) REFERENCES rol(rol_id) ON DELETE SET NULL"))
     private Rol rol;
 
+    // Constructores (sin cambios)
     public Usuario() {
     }
 
@@ -54,7 +56,7 @@ public class Usuario {
         this.rol = rol;
     }
 
-    // Getters y Setters
+    // Getters y Setters (sin cambios)
     public Long getUsuarioId() {
         return usuarioId;
     }
